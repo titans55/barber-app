@@ -41,11 +41,10 @@
                         {% csrf_token %}
                             <input id="startTimeInput" type="hidden" name="startTime" value="" />
                             <input id="endTimeInput" type="hidden" name="endTime" value="" />
-                            <input id="servicesInput" type="hidden" name="services" 
-                            value="[{% for service in barbershop.services.all %}{{service.name}},{% endfor %}]" />
-                            <!-- employee -->
+                            <input id="servicesInput" type="hidden" name="services" value="" />
+                            <input id="employeeIDInput" type="hidden" name="employeeID" value="" />
                             <input id="barbershopIDInput" type="hidden" name="barbershopID" value="{{barbershop.id}}" />
-                            <button id="submit-button" type="submit" disabled class="btn btn-primary btn-icon-text float-right">
+                            <button id="submit-button" type="submit" disabled class="btn btn-primary btn-icon-text float-right mt-3">
                                 <i class="mdi mdi-file-check btn-icon-prepend"></i>
                                 Submit
                             </button>
@@ -57,7 +56,7 @@
     </div>
 </div>
 <div id="barbershop-employees" data="{{barbershop.employees.all|safe}}"></div>
-{{barbershop.schedules}}
+{{barbershop}}
 
 {% for schedule in barbershop.schedules %}
     {{schedule.start_time}}
@@ -188,16 +187,17 @@
             $("#startTimeInput").val("")
             $("#endTimeInput").val("")
             $("#servicesInput").val("")
-            //employee
+            $("#employeeIDInput").val("")
             $("#submit-button").attr("disabled", true);
 
         }
 
         function enableSubmitAndAssignFormInputs(event){
+            let selectedServices = event.name.split(" & ")
             $("#startTimeInput").val(changeToDjangoDate(event.start))
             $("#endTimeInput").val(changeToDjangoDate(event.end))
-            $("#servicesInput").val(changeToDjangoDate(event.name))
-            //employee
+            $("#servicesInput").val(selectedServices)
+            $("#employeeIDInput").val(event.location)
             $("#submit-button").attr("disabled", false);
         }
 

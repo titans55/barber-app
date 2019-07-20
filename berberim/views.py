@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
 from django.http import HttpResponseNotFound
+from django.shortcuts import redirect, HttpResponse
 
-from .models import UserType, Barbershop
+from .models import UserType, Barbershop, BarbershopSchedule
 
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
@@ -11,6 +12,7 @@ import json
 from django.utils.translation import gettext as _
 
 from datetime import datetime
+from dateutil import parser
 from django.utils import timezone
 # Create your views here.
 
@@ -59,6 +61,7 @@ def barbershop(request, barbershop_slug):
     data = {
         'barbershop': {
             'name': barbershop.name,
+            'id': barbershop.id,
             'services': list(barbershop.services.all().values()),
             'employees': list(barbershop.employees.all().values()),
             'schedules': list(barbershop.schedules.filter(start_time__day=now.day).values(
@@ -73,5 +76,24 @@ def barbershop(request, barbershop_slug):
 @login_required
 def schedule_customer(request):
     user = request.user
-    print(dir(request.POST))
-    pass
+
+    start_time = parser.parse(request.POST['startTime'])
+    end_time = parser.parse(request.POST['endTime'])
+    services = request.POST['services'].split(',')
+    employee_id = request.POST['employeeID']
+    barbershop_id = request.POST['barbershopID']
+    print(start_time, "wololo")
+
+    print(services)
+    try:
+        BarbershopSchedule.objects.create(
+            start_time=start_time,
+            end_time=end_time,
+            services=services,
+            barbershop_id=barbershop_id,
+            assigned_employee_id=employee_id,
+            customer=request.user
+        )
+    except Exception as err:
+        raise err
+    return redirect("landing")

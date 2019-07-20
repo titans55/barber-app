@@ -1,0 +1,231 @@
+{% extends "customer/partials/layout.html" %}
+{% load static %}
+
+{% block headcdn %}
+<link rel="stylesheet" href="{% static 'assets/jquery-sked-tape-master/dist/jquery.skedTape.css' %}" type="text/css">
+
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-title mb-0">
+                <h2 class="display-1 text-center mb-0" >
+                    {{barbershop.name}}
+                </h2>
+            </div>
+            <form action="schedule" method="post">
+                {% csrf_token %}
+                <div class="card-body pt-0">
+                    <div class="row">
+                        <div class="col"></div>
+                        <div class="col-4 ">
+                            <div class="row">
+                                {% for service in barbershop.services %}
+                                <div class="col-6 card">
+                                    <div class="form-check form-check-primary calculate-service-time" >
+                                        <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" checked data-mins="{{service.duration_mins}}" data-service="{{service.name}}">
+                                        {{service.name}} ({{service.price}} TL, {{service.duration_mins}} mins)
+                                        <i class="input-helper"></i></label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col"></div>
+                    </div>
+                    <div id="container"></div>
+                    <div class="row">
+                        <div class="col">
+                            <input id="startTimeInput" type="hidden" name="startTime" value="" />
+                            <input id="endTimeInput" type="hidden" name="endTime" value="" />
+                            <input id="servicesInput" type="hidden" name="services" 
+                            value="[{% for service in barbershop.services.all %}{{service.name}},{% endfor %}]" />
+                            <!-- employee -->
+                            <input id="barbershopIDInput" type="hidden" name="barbershopID" value="{{barbershop.id}}" />
+                            <button id="submit-button" type="submit" class="btn btn-primary btn-icon-text float-right">
+                                <i class="mdi mdi-file-check btn-icon-prepend"></i>
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="barbershop-employees" data="{{barbershop.employees.all|safe}}"></div>
+
+
+{% endblock %}
+
+
+{% block footerjs %}
+    <script type="text/javascript" src="{% static 'assets/jquery-sked-tape-master/dist/jquery.skedTape.js' %}"></script>    
+    <script>
+        $(function(){
+            var createdEvent = false
+            var $sked = initScheduler()
+            let employeesData = $("#barbershop-employees").attr("data")
+            for(employee in employeesData){
+                console.log(employee.full_name)
+            }
+            console.log(employeesData)
+            $sked.on('event:dragEnded.skedtape', function(e) {
+                console.log("drageEnded")
+                let event = e.detail.event
+                enableSubmitAndAssignFormInputs(event)
+            });
+            $sked.on('event:click.skedtape', function(e) {
+                if(!e.detail.event.disabled){
+                    $sked.skedTape('removeEvent', e.detail.event.id);
+                }
+            });
+            
+            $sked.on('timeline:click.skedtape', function(e, api) {
+                console.log(e)
+                try {
+                    if(!createdEvent){
+                        $sked.skedTape('startAdding', {
+                            name: getServiceText(),
+                            duration: calculateServiceMins() * 60 * 1000
+                        });
+                        createdEvent = true
+                        disableSubmitAndResetFormInputs()
+                        console.log("dragStart")
+                    }else{
+                        $sked.skedTape('removeCreatedEventStartAddingNewOne', calculateServiceMins() * 60 * 1000, getServiceText())
+                        disableSubmitAndResetFormInputs()
+                        console.log("dragStart")
+                    }
+                    
+                }
+                catch (e) {
+                    if (e.name !== 'SkedTape.CollisionError') throw e;
+                    alert("This timeline is reserved")
+                }
+            });
+            
+        })
+
+        function initScheduler(){
+            return $('#container').skedTape({
+                caption: 'Employees',
+                start: today(7, 0), // Timeline starts this date-time (UTC)
+                end: today(17, 0),       // Timeline ends this date-time (UTC)
+                showEventTime: true,
+                showEventDuration: true,
+                scrollWithYWheel: true,
+                locations: [
+                    {% for employee in barbershop.employees %}
+                        {id: '{{employee.id}}', name: '{{employee.name}} ({{employee.title}})'}, 
+                    {% endfor %}
+                ],                
+                events: [
+                    // {
+                    //     name: 'Haircut & Beardcut',
+                    //     location: 'Usta',
+                    //     start: today(11, 10),
+                    //     end: today(12, 0),
+                    //     disabled: true
+                    // },
+                    // {
+                    //     name: 'Haircut & Beardcut',
+                    //     location: 'Usta',
+                    //     start: today(12, 10),
+                    //     end: today(13, 0),
+                    //     disabled: true
+                    // },
+                    // {
+                    //     name: 'Haircut',
+                    //     location: 'Çırak',
+                    //     start: today(8, 10),
+                    //     end: today(8, 50),
+                    //     disabled: true
+                    // },
+                    // ...
+                ],
+                maxTimeGapHi: 60 * 1000, // 1 minute
+                minGapTimeBetween: 10 * 60 * 1000,
+                snapToMins: 10,
+                editMode: true,
+                timeIndicatorSerifs: true,
+                formatters: {
+                    date: function (date) {
+                        return $.fn.skedTape.format.date(date, 'l', '.');
+                    },
+                    duration: function (ms, opts) {
+                        return $.fn.skedTape.format.duration(ms, {
+                            hrs: ' hours',
+                            min: ' minutes'
+                        });
+                    },
+                },
+                // canAddIntoLocation: function(location, event) {
+                //     return location.id !== 'london';
+                // },
+                postRenderLocation: function($el, location, canAdd) {
+                    this.constructor.prototype.postRenderLocation($el, location, canAdd);
+                    $el.prepend('<i class="fas fa-thumbtack text-muted"/> ');
+                }
+            });
+        }
+
+        function calculateServiceMins(){
+            let totalMins = 0
+            $(".calculate-service-time input:checked").each(function(){
+                let checkbox = $(this)
+                let mins = parseInt(checkbox.attr("data-mins"))
+                totalMins += mins
+            })
+            return totalMins
+        }
+        function getServiceText(){
+            let serviceText = ''
+            let lenOfLoop = $(".calculate-service-time input:checked").length
+            let index = 0
+            $(".calculate-service-time input:checked").each(function(){
+                let checkbox = $(this)
+                serviceText += checkbox.attr("data-service")  
+                if(index<lenOfLoop-1 && lenOfLoop!=1) serviceText += " & ";
+                index += 1
+            })
+            return serviceText
+        }
+        function disableSubmitAndResetFormInputs(){
+            $("#startTimeInput").val("")
+            $("#endTimeInput").val("")
+            $("#servicesInput").val("")
+            //employee
+            $("#submit-button").attr("disabled", true);
+
+        }
+
+        function enableSubmitAndAssignFormInputs(event){
+            $("#startTimeInput").val("")
+            $("#endTimeInput").val("")
+            $("#servicesInput").val("")
+            //employee
+            $("#submit-button").attr("disabled", false);
+        }
+
+        // helpers
+        function today(hours, minutes) {
+            var date = new Date();
+            date.setUTCHours(hours, minutes, 0, 0);
+            return date;
+        }
+        function yesterday(hours, minutes) {
+            var date = today(hours, minutes);
+            date.setTime(date.getTime() - 24 * 60 * 60 * 1000);
+            return date;
+        }
+        function tomorrow(hours, minutes) {
+        var date = today(hours, minutes);
+            date.setTime(date.getTime() + 24 * 60 * 60 * 1000);
+            return date;
+        }
+    </script>
+{% endblock %}

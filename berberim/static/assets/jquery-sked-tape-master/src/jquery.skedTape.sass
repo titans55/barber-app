@@ -1,0 +1,355 @@
+/* ==========================================================================
+ * Default settings
+ * ==========================================================================
+
+// general
+$skedtape-use-sticky-header: false !default
+
+// dimensions
+$skedtape-hour-column-width: 96px !default
+$skedtape-hour-row-height: 24px !default
+$skedtape-entry-row-height: 54px !default
+$skedtape-dates-height: 24px !default
+
+// colors & decoration
+$skedtape-grid-color: #E5E5E5 !default
+$skedtape-grid: 1px solid $skedtape-grid-color !default
+$skedtape-row-header-padding: 15px !default
+$skedtape-row-header-color: #EFEFEF !default
+$skedtape-legend-row-separator: 1px solid white !default
+$skedtape-entry-row-separator: 0 !default
+$skedtape-entry-row-gap: 1px
+$skedtape-row-header-gap: 5px solid transparent !default
+$skedtape-row-uneven-color: #FDFDFD !default
+$skedtape-row-even-color: #F4F4F4 !default
+$skedtape-entry-color: #EC6A5E !default
+$skedtape-entry-color-hover: darken($skedtape-entry-color, 10%) !default
+$skedtape-entry-border: 1px solid darken($skedtape-entry-color, 15%) !default
+$skedtape-entry-padding: 10px !default
+$skedtape-background-color: white !default
+
+/* ==========================================================================
+ * SkedTape
+ * ==========================================================================
+
+.sked-tape
+	display: flex
+	align-items: stretch
+	width: 100%
+	max-width: 100%
+	box-sizing: border-box
+
+	*
+		box-sizing: inherit
+
+	&__aside
+		flex: none
+		max-width: 30%
+		min-width: 100px
+		padding: 0 !important
+		border-right: $skedtape-row-header-gap
+		position: relative
+
+	&__locations
+		margin: 0
+		padding: 0
+		list-style: none
+
+	&__location
+		position: relative
+		padding: 0 $skedtape-row-header-padding
+		background-color: $skedtape-row-header-color
+		line-height: $skedtape-entry-row-height
+		height: $skedtape-entry-row-height
+
+		&:not(:last-child)
+			border-bottom: $skedtape-legend-row-separator
+		
+		&--forbidden
+			background-image: repeating-linear-gradient(-45deg, rgba(236, 106, 94, 0.5), rgba(236, 106, 94, 0.5) 10px, rgba(255, 0, 0, 0) 10px, rgba(255, 0, 0, 0) 20px)
+		
+	&__location-text
+		display: inline-block
+		max-width: 100%
+		overflow: hidden
+		text-overflow: ellipsis
+		white-space: nowrap
+		word-wrap: normal
+
+	&__caption
+		display: block
+		background-color: $skedtape-background-color
+		height: $skedtape-hour-row-height
+		position: if($skedtape-use-sticky-header, sticky, relative)
+		top: 0
+		text-align: center
+		@at-root .sked-tape--has-dates &
+			height: $skedtape-hour-row-height + $skedtape-dates-height
+			line-height: $skedtape-hour-row-height + $skedtape-dates-height
+
+	&__time-wrap
+		flex: 3 0 auto
+		width: 0
+		padding: 0 !important
+
+	&__time-frame
+		display: block
+		width: 100%
+		overflow-x: auto
+		-webkit-overflow-scrolling: touch
+		&:focus
+			outline: none
+	
+	&__time-canvas
+		position: relative
+
+	&__hours
+		background: $skedtape-background-color
+		transform-style: preserve-3d
+
+		> ul
+			margin: 0
+			padding: 0
+			list-style: none
+			display: flex
+			height: $skedtape-hour-row-height
+			align-items: center
+
+			> li
+				flex: none
+				display: block
+				position: relative
+				min-width: $skedtape-hour-column-width
+				width: $skedtape-hour-column-width
+				height: $skedtape-hour-row-height
+				line-height: $skedtape-hour-row-height
+
+				> time
+					display: block
+					position: absolute
+					left: 0
+					font-size: 13px
+					white-space: nowrap
+				&:not(:first-child) > time
+					transform: translateX(-50%)
+				&:last-child
+					width: 0
+					min-width: 0
+					> time
+						transform: translateX(-100%)
+
+	&__timeline-wrap
+		position: relative
+
+	&__timeline
+		list-style: none
+		margin: 0
+		padding: 0
+		width: 100%
+		border-left: none
+		display: flex
+		flex-direction: column
+		align-items: stretch
+
+	&__event-row
+		position: relative
+		background-color: $skedtape-row-even-color
+		height: $skedtape-entry-row-height
+		&:nth-child(odd)
+			background-color: $skedtape-row-uneven-color
+		&:first-child
+			border-top: $skedtape-grid
+		&:last-child
+			border-bottom: $skedtape-grid
+		&:not(:last-child)
+			border-bottom: $skedtape-entry-row-separator
+	
+	&__gap
+		display: block
+		height: $skedtape-entry-row-height - 1px
+		line-height: 1
+		position: absolute
+		z-index: 4
+		white-space: nowrap
+		font-size: 12px
+		pointer-events: none
+
+	&__gap-text
+		display: block
+		position: absolute
+		left: 50%
+		top: 50%
+		transform: translate(-50%, -50%)
+		background: white
+		border-radius: 0.2em
+		padding: 2px
+	
+	&__intersection
+		background: transparent
+		top: $skedtape-entry-row-gap
+		bottom: 0
+		display: block
+		position: absolute
+		z-index: 4
+		border: 2px dashed rgba(255, 62, 44, 0.5)
+		//background: repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) 10px, rgba(0, 0, 0, 0.3) 10px, rgba(0, 0, 0, 0.3) 20px)
+
+	&__event
+		background-color: $skedtape-entry-color
+		transition: 200ms background-color
+		top: $skedtape-entry-row-gap
+		bottom: 0
+		display: block
+		position: absolute
+		z-index: 3
+		white-space: nowrap
+		overflow: hidden
+		font-size: 12px
+		color: white
+		border: $skedtape-entry-border
+		//transform-style: preserve-3d
+		min-width: 10px
+		cursor: default
+		line-height: 16px
+		&:hover
+			background-color: $skedtape-entry-color-hover
+		&--low-gap
+			background-color: rgba(51, 175, 12, 0.53)
+			border-color: #5ba044
+			&:hover
+				background-color: rgba(56, 193, 13, 0.79)
+				border-color: #579842
+		&--disabled, &--disabled:hover
+			background-color: #b7b1b1
+			border-color: #a79797
+		@at-root .sked-tape__event-row:first-child &
+			top: 0
+	
+	&__dummy-event
+		display: block
+		position: absolute
+		border: 2px dashed darken($skedtape-entry-color, 15%)
+		top: $skedtape-entry-row-gap
+		bottom: 0
+		z-index: 4
+		white-space: nowrap
+		font-size: 12px
+		color: white
+		&::before, &::after
+			position: absolute
+			display: block
+			top: 50%
+			transform: translateY(-50%)
+			color: #fff
+			border: 1px solid darken($skedtape-entry-color, 15%)
+			background: rgba(227, 44, 27, 0.69)
+			padding: 3px 2px
+			line-height: 1
+		&::before
+			content: attr(data-start)
+			right: 100%
+			margin-right: 5px
+		&::after
+			content: attr(data-end)
+			left: 100%
+			margin-left: 5px
+	
+	&__center
+		position: relative
+		top: 50%
+		transform: translateY(-50%)
+		display: block
+		padding: 0 $skedtape-entry-padding
+	
+	&__grid
+		display: flex
+		align-items: stretch
+		list-style: none
+		margin: 0
+		padding: 0
+		position: absolute
+		left: 0
+		right: 0
+		top: 0
+		bottom: 0
+		> li
+			display: block
+			margin: 0
+			padding: 0
+			background-image: linear-gradient(to right,$skedtape-grid-color 1px,$skedtape-grid-color 1px), linear-gradient(to right,$skedtape-grid-color 1px,$skedtape-grid-color 1px), linear-gradient(to right,$skedtape-grid-color 1px,$skedtape-grid-color 1px), linear-gradient(to right,$skedtape-grid-color 1px,$skedtape-grid-color 1px), linear-gradient(to right,$skedtape-grid-color 1px,$skedtape-grid-color 1px)
+			background-size: 1px 100%, 1px 100%, 1px 100%, 1px 100%, 1px 100%
+			background-repeat: no-repeat
+			background-position: 0 0, 100% 0, 25% 0, 50% 0, 75% 0
+			min-width: $skedtape-hour-column-width
+			width: $skedtape-hour-column-width
+
+	&__indicator
+		$serif-width: 6px
+		$serif-height: 6px
+		position: absolute
+		z-index: 4
+		top: 0
+		bottom: 0
+		border-left: 1px solid #e43828
+		&--serifs
+			&::before, &::after
+				content: ''
+				display: block
+				position: absolute
+				left: (-$serif-width / 2 - 1px)
+				width: 0
+				height: 0
+				border: ($serif-width / 2) solid transparent
+			&::before
+				top: 0
+				border-bottom-width: ($serif-height / 2)
+				border-top: ($serif-height / 2) solid #e43828
+			&::after
+				bottom: 0
+				border-top-width: ($serif-height / 2)
+				border-bottom: ($serif-height / 2) solid #e43828
+
+	&__dates
+		display: flex
+		align-items: stretch
+		width: 100%
+		list-style: none
+		margin: 0
+		padding: 0
+
+	&__date
+		display: block
+		margin: 0
+		padding: 0
+		height: $skedtape-dates-height
+		line-height: $skedtape-dates-height
+		font-size: 13px
+		font-weight: bold
+		text-align: center
+		overflow: hidden
+		white-space: nowrap
+		background: #e0e0e0
+		&:nth-child(odd)
+			background: #eee
+		&:before, &:after
+			content: attr(title)
+			display: block
+			width: calc(50% - 20px)
+			height: inherit
+			overflow: hidden
+			text-overflow: ellipsis
+		&:before
+			float: left
+			margin-left: 15px
+			text-align: left
+		&:after
+			float: right
+			margin-right: 15px
+			text-align: right
+		&--short:before
+			float: none
+			width: auto
+			margin: 0 5px
+			text-align: center
+		&--short:after
+			display: none

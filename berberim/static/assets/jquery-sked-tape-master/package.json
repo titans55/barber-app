@@ -1,0 +1,38 @@
+{
+  "name": "jquery-sked-tape",
+  "version": "2.0.0",
+  "description": "Schedule component for jQuery that represents events in tape manner.",
+  "main": "dist/jquery.skedTape.js",
+  "style": "dist/jquery.skedTape.css",
+  "scripts": {
+    "build": "gulp build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lexkrstn/jquery-sked-tape.git"
+  },
+  "keywords": [
+    "schedule",
+    "jquery"
+  ],
+  "author": "Alexander Korostin <lexkrstn@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lexkrstn/jquery-sked-tape/issues"
+  },
+  "homepage": "https://github.com/lexkrstn/jquery-sked-tape#readme",
+  "devDependencies": {
+    "gulp": "^4.0.0",
+    "gulp-autoprefixer": "^5.0.0",
+    "gulp-clean-dest": "^0.2.0",
+    "gulp-connect": "^5.5.0",
+    "gulp-if": "^2.0.2",
+    "gulp-notify": "^3.2.0",
+    "gulp-open": "^3.0.1",
+    "gulp-plumber": "^1.2.0",
+    "gulp-sass": "^4.0.1",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-wrap": "^0.15.0"
+  }
+}

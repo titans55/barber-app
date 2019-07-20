@@ -1,0 +1,63 @@
+{% load static %}
+{% load sass_tags %}
+{% load i18n %}
+<html>
+
+    <head>
+        <title>Berberim</title>
+
+        <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"> -->
+        <link rel="stylesheet" href="{% sass_src 'assets/kapella_bootstrap_theme/vendors/mdi/css/materialdesignicons.min.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% sass_src 'assets/kapella_bootstrap_theme/vendors/base/vendor.bundle.base.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% sass_src 'assets/kapella_bootstrap_theme/scss/style.scss' %}" type="text/css">
+
+        <!-- <link rel="stylesheet" href="vendors/mdi/css/materialdesignicons.min.css"> -->
+
+        <!-- 
+        <link rel="stylesheet" href="{% static 'wololo/css/main.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'wololo/css/game.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'wololo/assets/css/animate.css' %}" type="text/css"> -->
+        <!-- link(rel='shortcut icon', href='/favicon.png') -->
+        <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous"> -->
+
+
+        {% block headcdn %} {% endblock %}
+
+
+    </head>
+
+    <body>
+        <div class="container-scroller">
+        {% include "customer/partials/navbar.html" %}
+        <!-- <div class="popup">+1</div> -->
+            
+            <div class="container-fluid page-body-wrapper">
+                <div class="main-panel">
+                    <div class="content-wrapper">
+                        {% block content %}
+                        {% endblock %}
+                    </div>
+                    {% include 'customer/partials/footer.html' %}
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <!-- <script type="text/javascript" src="{% static 'wololo/assets/js/popper.js/dist/umd/popper.min.js' %}"></script> -->
+    
+        <script type="text/javascript" src="{%static 'assets/kapella_bootstrap_theme/vendors/base/vendor.bundle.base.js' %}"></script>
+        <script type="text/javascript" src="{%static 'assets/kapella_bootstrap_theme/js/template.js' %}"></script>    
+        
+        <script>
+
+        </script>
+        {% block footerjs %}
+        {% endblock %}
+
+    </body>
+
+</html>

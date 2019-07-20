@@ -1,0 +1,87 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-06-29 14:55+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: .\berberim\templates\login.html:32
+msgid "Username"
+msgstr "Kullanıcı Adı"
+
+#: .\berberim\templates\login.html:32
+msgid "Email"
+msgstr "E-Posta"
+
+#: .\berberim\templates\login.html:43
+msgid "Password"
+msgstr "Şifre"
+
+#: .\berberim\templates\login.html:60
+msgid "Forgot password?"
+msgstr "Şifrenizi mi unuttunuz?"
+
+#: .\berberim\templates\login.html:63
+msgid "LOGIN"
+msgstr "GİRİŞ YAP"
+
+#: .\berberim\templates\login.html:74
+msgid "Don't have an account?"
+msgstr "Hesabınız yok mu?"
+
+#: .\berberim\templates\login.html:74
+msgid "Create Account"
+msgstr "Hesap Oluştur"
+
+#: .\berberim\templates\login.html:29
+msgid "Customer<br>Login"
+msgstr "Müşteri<br>Girişi"
+
+#: .\berberim\templates\login.html:29
+msgid "Barber<br>Login"
+msgstr "Berber<br>Girişi"
+
+#: .\berberim\templates\register.html:33
+msgid "Register<br>as Customer"
+msgstr "Müşteri<br>Kayıt"
+
+#: .\berberim\templates\register.html:33
+msgid "Register<br>as Barber"
+msgstr "Berber<br>Kayıt"
+
+#: .\berberim\templates\register.html:33
+msgid "Join us today!"
+msgstr "Aramıza katıl!"
+
+#: .\berberim\templates\register.html:33
+msgid "Register as customer or barber."
+msgstr "Müşteri veya berber olarak kayıt ol."
+
+#: .\berberim\templates\register.html:72
+msgid "By cliciking Sign Up, you agree to our Terms & Privacy Policy."
+msgstr "Kayıt olarak Kullanıcı Sözleşmemizi & Gizlilik Politikamızı kabul etmiş olursunuz."
+
+#: .\berberim\templates\register.html:75
+msgid "SIGN UP"
+msgstr "KAYIT OL"
+
+#: .\berberim\templates\register.html:78
+msgid "Already have an account?"
+msgstr "Zaten hesabınız var mı?"
+
+#: .\berberim\templates\register.html:78
+msgid "Login"
+msgstr "Giriş yap"

@@ -10,6 +10,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 import json
 from django.utils.translation import gettext as _
 
+from datetime import datetime
+from django.utils import timezone
 # Create your views here.
 
 @login_required
@@ -20,7 +22,7 @@ def landing(request):
     barbarshops = Barbershop.objects.all()
     print(barbarshops)
     data = {'barbershops': barbarshops}
-
+    
     return render(request, str(user.user_type) + '/dashboard.html',
                   {'data': data})
 
@@ -51,11 +53,17 @@ def barbershop(request, barbershop_slug):
         return HttpResponseNotFound("hello")    
 
     # barbershop.employees = list(barbershop.employees.all().values())
+    print(list(barbershop.schedules.all().values()))
+    now = timezone.localtime(timezone.now())
+
     data = {
         'barbershop': {
             'name': barbershop.name,
             'services': list(barbershop.services.all().values()),
             'employees': list(barbershop.employees.all().values()),
+            'schedules': list(barbershop.schedules.filter(start_time__day=now.day).values(
+                'start_time__hour', 'start_time__minute', 'end_time__hour', 'end_time__minute', 'assigned_employee'
+                ))
         }
     }
     data = json.loads(json.dumps(data, cls=DjangoJSONEncoder))
@@ -65,5 +73,5 @@ def barbershop(request, barbershop_slug):
 @login_required
 def schedule_customer(request):
     user = request.user
-
+    print(dir(request.POST))
     pass

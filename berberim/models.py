@@ -231,7 +231,11 @@ class BarbershopSchedule(models.Model):
     )
     barbershop = models.ForeignKey(
         'berberim.Barbershop',
-        on_delete=models.CASCADE, related_name="barbershopschedules", 
+        on_delete=models.CASCADE, related_name="schedules", 
+    )
+    assigned_employee = models.ForeignKey(
+        'berberim.BarbershopEmployee',
+        on_delete=models.CASCADE, related_name="schedules", 
     )
 
     class Meta:

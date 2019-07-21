@@ -189,8 +189,8 @@ class Address(models.Model):
     # Fields
     id = models.AutoField(primary_key=True)
     description = models.CharField(max_length=255)
-    lng = models.DecimalField(max_digits=9, decimal_places=6)
-    lat = models.DecimalField(max_digits=9, decimal_places=6)
+    lng = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
     # Relationship Fields
     created_by = models.ForeignKey(

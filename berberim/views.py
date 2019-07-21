@@ -57,19 +57,20 @@ def user_settings(request):
 
                 if form.is_valid() and formset.is_valid():
                     if request.POST['action'] == "Create":
-                        for form_c in formset:
-                            if not form_c.cleaned_data['delete']:
-                                pass
+                        for form_employee in formset:
+                            if not 'delete' in form_employee.cleaned_data:
                                 # create data
+                                barbershop = form.save(request.user)
+                                form_employee.save(barbershop)
                     elif request.POST['action'] == "Edit":
-                        for form_c in formset:
-                            if form_c.cleaned_data['delete']:
+                        for form_employee in formset:
+                            if 'delete' in form_employee.cleaned_data and form_employee.cleaned_data['delete']:
                                 pass
                                 # delete data
                             else:
                                 pass
                                 # create data
-                    return HttpResponseRedirect('abm_usuarios')
+                    
             # try:
             #     barbershop = Barbershop.objects.get(owner=user)
             #     data = {

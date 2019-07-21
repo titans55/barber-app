@@ -46,9 +46,10 @@
                     <input type="hidden" name="extra" value="{{extra}}">
                     <div class="form-group">
                         <fieldset>
+                        {{formset.management_form }}
                         {% for form in formset %}
                             <div class="form-inline">
-
+                                
                                 <!-- <label class="sr-only">Name</label> -->
                                 {{form.title}}
                                 {{ form.name }}

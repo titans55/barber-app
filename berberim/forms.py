@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, UserType, Barbershop, BarbershopEmployee, EMPLOYEE_TITLES_CHOICES
+from .models import User, UserType, Barbershop, BarbershopEmployee, EMPLOYEE_TITLES_CHOICES, Address
 from django.utils.translation import gettext as _
 import re
 
@@ -75,6 +75,22 @@ class BarberUserSettingsForm(forms.Form):
         required=False,
         label=_('Address')
     )
+    def save(self, user):
+        try: 
+            b, b_created = Barbershop.objects.get_or_create(
+                name=self.cleaned_data['barbershop_name'],
+                owner=user
+            )
+            a, a_created = address_instance = Address.objects.get_or_create(
+                description=self.cleaned_data['address_description'],
+                created_by=user
+            )
+            b.address = a
+            b.save()
+            return b
+        except Exception as err:
+            raise(err)
+
 
 class EmployeeForm(forms.ModelForm):
     name = forms.CharField(
@@ -107,6 +123,21 @@ class EmployeeForm(forms.ModelForm):
     class Meta:
         model = BarbershopEmployee
         fields = ['title', 'name', 'surname']
+
+    def save(self, barbershop):
+        try:
+            employee = BarbershopEmployee.objects.create(
+                name=self.cleaned_data['name'],
+                surname=self.cleaned_data['surname'],
+                title=self.cleaned_data['title'],
+                barbershop=barbershop
+            )
+            return employee
+        except Exception as err:
+            raise(err)
+
+
+
 
 from django.forms import formset_factory
 # EmployeeFormset = formset_factory(EmployeeForm, extra=1)

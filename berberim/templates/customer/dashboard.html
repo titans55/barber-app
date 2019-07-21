@@ -6,6 +6,9 @@
     .table td, th {
         text-align: center;
     }
+    .clickable-tr td:hover{
+        cursor: pointer;
+    }
 </style>
 {% endblock %}
 
@@ -46,7 +49,7 @@
                         </thead>
                         <tbody>
                             {% for barbershop in data.barbershops %}
-                                <tr data-href="/barbershop/{{barbershop.slug}}">
+                                <tr class="clickable-tr" data-href="/barbershop/{{barbershop.slug}}">
                                     <td>{{barbershop.name}}</td>
                                     <td>
                                         <label class="badge badge-success text-white">Very Positive</label>

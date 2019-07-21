@@ -44,12 +44,34 @@ def landing(request):
 def user_settings(request):
     user = request.user
 
+    def _init_forms_and_extra(extra=None):
+        try:
+            barbershop = Barbershop.objects.get(owner=user)
+            form = BarberUserSettingsForm(
+                initial={
+                    'barbershop_name':barbershop.name,
+                    'address_description':barbershop.address.description
+                }
+            )
+            if barbershop.employees.exists():
+                #TODO optimize this
+                extra = 0 if extra is None else extra
+                FormSet = formset_factory(EmployeeForm, extra=extra)
+                formset = FormSet(initial=[{'title':emp.title, 'name': emp.name, 'surname':emp.surname} for emp in barbershop.employees.all()])
+            else:
+                extra = 1 if extra is None else extra
+                formset = formset_factory(EmployeeForm, extra=extra)
+                
+        except Barbershop.DoesNotExist:
+            form = BarberUserSettingsForm()
+            extra = 1 if extra is None else extra
+            formset = formset_factory(EmployeeForm, extra=extra)
+        return form, formset, extra
+
     if 'barber' == str(user.user_type):
         if request.method == 'POST':
             if request.POST['action'] == "+":
-                extra = int(float(request.POST['extra'])) + 1
-                form = BarberUserSettingsForm(initial=request.POST)
-                formset = formset_factory(EmployeeForm, extra=extra)
+                form, formset, extra = _init_forms_and_extra(int(float(request.POST['extra'])) + 1)
             else:
                 extra = int(float(request.POST['extra']))
                 form = BarberUserSettingsForm(request.POST)
@@ -60,7 +82,7 @@ def user_settings(request):
                         for form_employee in formset:
                             if not 'delete' in form_employee.cleaned_data:
                                 # create data
-                                barbershop = form.save(request.user)
+                                barbershop = form.save(user)
                                 form_employee.save(barbershop)
                     elif request.POST['action'] == "Edit":
                         for form_employee in formset:
@@ -71,19 +93,9 @@ def user_settings(request):
                                 pass
                                 # create data
                     
-            # try:
-            #     barbershop = Barbershop.objects.get(owner=user)
-            #     data = {
-            #         'barbershop': barbershop
-            #     }
-            # except Barbershop.DoesNotExist:
-            #     form = BarberUserSettingsForm
-            #     formset = EmployeeFormset
             return render(request, str(user.user_type) + '/settings.html', {'user': user, 'form': form, 'formset':formset, 'extra': extra})
         
-        form = BarberUserSettingsForm()
-        extra = 1
-        formset = formset_factory(EmployeeForm, extra=extra)
+        form, formset, extra = _init_forms_and_extra()
 
         return render(request, str(user.user_type) + '/settings.html', {'user': user, 'form': form, 'formset':formset, 'extra': extra})
 

@@ -1,0 +1,99 @@
+{% extends "barber/partials/layout.html" %}
+{% load static %}
+{% load sass_tags %}
+{% load i18n %}
+
+{% block headcdn %}
+<style>
+    .select2-selection__rendered {
+        line-height: 43px !important;
+    }
+    .select2-container .select2-selection--single {
+        height: 47px !important;
+    }
+    .select2-selection__arrow {
+        height: 46px !important;
+    }
+    span.select2.select2-container.select2-container {
+        margin-bottom: 5px!important;
+        margin-right: 1vh!important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<form class="" method="post" action="{{ action }}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-6 grid-margin stretch-card" style="height:75vh">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">{% trans "Barbershop Settings" %}</h4>
+                    {% for field in form %}
+                        <div class="form-group">
+                            <label>{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 grid-margin stretch-card" style="height:75vh">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">{% trans "Employees" %}</h4>
+
+                    <input type="hidden" name="extra" value="{{extra}}">
+                    <div class="form-group">
+                        <fieldset>
+                        {% for form in formset %}
+                            <div class="form-inline">
+
+                                <!-- <label class="sr-only">Name</label> -->
+                                {{form.title}}
+                                {{ form.name }}
+                                <!-- <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="Jane Doe"> -->
+                                
+                                {{ form.surname }}
+                                <!-- <div class="input-group mb-2 mr-sm-2">
+                                    <div class="input-group-prepend">
+                                    <div class="input-group-text">@</div>
+                                    </div>
+                                    <input type="text" class="form-control" id="inlineFormInputGroupUsername2" placeholder="Username">
+                                </div> -->
+                                <!-- <div class="form-check mx-sm-2">
+                                    <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" checked="">
+                                    Remember me
+                                    <i class="input-helper"></i></label>
+                                </div> -->
+                            </div>
+
+                        {% endfor %}
+                        <input type="submit" name="action" value="+">
+                    </fieldset>
+                </div>
+                <div style="text-align: right">
+                {% if not edit%}
+                    <input type="submit" name="action" value="Create">
+                {% else %}
+                    <input type="submit" name="action" value="Edit">
+                {% endif %}
+                </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</form>
+
+{% endblock %}
+
+
+{% block footerjs %}
+<script>
+    $(()=>{
+        $('.init-select2').select2();
+    })
+</script>
+{% endblock %}

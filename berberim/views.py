@@ -14,16 +14,28 @@ from django.utils.translation import gettext as _
 from datetime import datetime
 from dateutil import parser
 from django.utils import timezone
-# Create your views here.
+from .forms import BarberUserSettingsForm, EmployeeForm
+from django.forms import formset_factory
 
 @login_required
 def landing(request):
     user = request.user
     # TODO filter barbershops by distance
 
-    barbarshops = Barbershop.objects.all()
-    print(barbarshops)
-    data = {'barbershops': barbarshops}
+    if 'barber' == str(user.user_type):
+        try:
+            barbershop = Barbershop.objects.get(owner=user)
+            data = {
+                'barbershop': barbershop
+            }
+        except Barbershop.DoesNotExist:
+            return redirect('user-settings')
+
+
+    elif 'customer' is str(user.user_type):
+        barbarshops = Barbershop.objects.all()
+        data = {'barbershops': barbarshops}
+
     
     return render(request, str(user.user_type) + '/dashboard.html',
                   {'data': data})
@@ -32,7 +44,48 @@ def landing(request):
 def user_settings(request):
     user = request.user
 
-    data = {'de': 'de'}
+    if 'barber' == str(user.user_type):
+        if request.method == 'POST':
+            if request.POST['action'] == "+":
+                extra = int(float(request.POST['extra'])) + 1
+                form = BarberUserSettingsForm(initial=request.POST)
+                formset = formset_factory(EmployeeForm, extra=extra)
+            else:
+                extra = int(float(request.POST['extra']))
+                form = BarberUserSettingsForm(request.POST)
+                formset = formset_factory(EmployeeForm, extra=extra)(request.POST)
+
+                if form.is_valid() and formset.is_valid():
+                    if request.POST['action'] == "Create":
+                        for form_c in formset:
+                            if not form_c.cleaned_data['delete']:
+                                pass
+                                # create data
+                    elif request.POST['action'] == "Edit":
+                        for form_c in formset:
+                            if form_c.cleaned_data['delete']:
+                                pass
+                                # delete data
+                            else:
+                                pass
+                                # create data
+                    return HttpResponseRedirect('abm_usuarios')
+            # try:
+            #     barbershop = Barbershop.objects.get(owner=user)
+            #     data = {
+            #         'barbershop': barbershop
+            #     }
+            # except Barbershop.DoesNotExist:
+            #     form = BarberUserSettingsForm
+            #     formset = EmployeeFormset
+            return render(request, str(user.user_type) + '/settings.html', {'user': user, 'form': form, 'formset':formset, 'extra': extra})
+        
+        form = BarberUserSettingsForm()
+        extra = 1
+        formset = formset_factory(EmployeeForm, extra=extra)
+
+        return render(request, str(user.user_type) + '/settings.html', {'user': user, 'form': form, 'formset':formset, 'extra': extra})
+
 
     return render(request, str(user.user_type) + '/settings.html', {'data': data})
 

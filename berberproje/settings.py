@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'berberim',
     'sass_processor',
     'debug_toolbar',
+    'dynamic_formsets',
 ]
 
 MIDDLEWARE = [

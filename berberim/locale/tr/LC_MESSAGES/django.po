@@ -85,3 +85,36 @@ msgstr "Zaten hesabınız var mı?"
 #: .\berberim\templates\register.html:78
 msgid "Login"
 msgstr "Giriş yap"
+
+#: .\berberim\forms.py
+msgid "Master"
+msgstr "Usta"
+
+msgid "Journeyman"
+msgstr "Kalfa"
+
+msgid "Apprentice"
+msgstr "Çırak"
+
+msgid "Barbershop"
+msgstr "Berber"
+
+msgid "What is the name of the shop?"
+msgstr "Dükkanınızın adı nedir?"
+
+msgid "Address"
+msgstr "Adres"
+
+msgid "Name"
+msgstr "İsim"
+
+msgid "Surname"
+msgstr "Soyisim"
+
+#: .\berberim\templates\barber\settings.html
+
+msgid "Barbershop Settings"
+msgstr "Berber Dükkanı Ayarları"
+
+msgid "Employees"
+msgstr "Çalışanlar"

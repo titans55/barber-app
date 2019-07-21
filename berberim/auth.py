@@ -23,15 +23,15 @@ def register(request):
         if(form.is_valid()):
             print(form.cleaned_data)
             
-            try: 
-                user = form.save()
-                login(request, user)
-            except Exception as err:
+            #try: 
+            user = form.save()
+            login(request, user)
+            #except Exception as err:
                 # if err.code == 400:
                 #     messages.error(request, 'That email is already registered.')
                 # else:
                 #     raise
-                return HttpResponse(err)
+                #return HttpResponse(err)
             return redirect(settings.LOGIN_URL)
 
         return render(request, 'register.html', {'form': form})

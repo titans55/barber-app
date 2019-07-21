@@ -18,6 +18,8 @@ from django.contrib.auth import models as auth_models
 from django.db import models as models
 from django_extensions.db import fields as extension_fields
 from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext as _
+
 class User(AbstractUser):
 
     # Fields
@@ -107,15 +109,14 @@ class Barbershop(models.Model):
     def get_update_url(self):
         return reverse('berberim_barbershop_update', args=(self.slug,))
 
+#Expand this array by customer demand
+EMPLOYEE_TITLES_CHOICES = [
+    ('Master', _('Master')),
+    ('Journeyman', _('Journeyman')),
+    ('Apprentice', _('Apprentice')),
+]
 
 class BarbershopEmployee(models.Model):
-
-    #Expand this array by customer demand
-    EMPLOYEE_TITLES_CHOICES = [
-        ('Master', 'Master'),
-        ('Journeyman', 'Journeyman'),
-        ('Apprentice', 'Apprentice'),
-    ]
 
     # Fields
     id = models.AutoField(primary_key=True)
@@ -150,9 +151,9 @@ class BarbershopEmployee(models.Model):
 
 #Expand this array by customer demand
 SERVICE_NAME_CHOICES = [
-    ('Haircut', 'Haircut'),
-    ('Beardcut', 'Beardcut'),
-    ('Hair Wash', 'Hair Wash'),
+    ('Haircut', _('Haircut')),
+    ('Beardcut', _('Beardcut')),
+    ('Hair Wash', _('Hair Wash')),
 ]
 
 class BarbershopServices(models.Model):

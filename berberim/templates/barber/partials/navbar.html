@@ -149,7 +149,7 @@
                   <img src="images/faces/face28.png" alt="profile"/>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-                    <a class="dropdown-item">
+                    <a class="dropdown-item" href="/user-settings">
                       <i class="mdi mdi-settings text-primary"></i>
                       Settings
                     </a>
@@ -169,73 +169,23 @@
     <nav class="bottom-navbar">
       <div class="container">
           <ul class="nav page-navigation">
-            <li class="nav-item">
-              <a class="nav-link" href="index.html">
+            <li class="nav-item {% if request.resolver_match.url_name == 'landing' %}active{% endif %}">
+              <a class="nav-link p-3" href="/">
                 <i class="mdi mdi-file-document-box menu-icon"></i>
-                <span class="menu-title">Dashboard</span>
+                <span class="menu-title">Barbershops Around Me</span>
               </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="mdi mdi-cube-outline menu-icon"></i>
-                  <span class="menu-title">UI Elements</span>
-                  <i class="menu-arrow"></i>
-                </a>
-                <div class="submenu">
-                    <ul>
-                        <li class="nav-item"><a class="nav-link" href="pages/ui-features/buttons.html">Buttons</a></li>
-                        <li class="nav-item"><a class="nav-link" href="pages/ui-features/typography.html">Typography</a></li>
-                    </ul>
-                </div>
+              <a class="nav-link p-3 {% if request.resolver_match.url_name == 'user-settings' %}active{% endif %}" href="/barbershop-map">
+                <i class="mdi mdi-map menu-icon"></i>
+                <span class="menu-title">Barbershop Map</span>
+              </a>
             </li>
-            <li class="nav-item">
-                <a href="pages/forms/basic_elements.html" class="nav-link">
-                  <i class="mdi mdi-chart-areaspline menu-icon"></i>
-                  <span class="menu-title">Form Elements</span>
-                  <i class="menu-arrow"></i>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="pages/charts/chartjs.html" class="nav-link">
-                  <i class="mdi mdi-finance menu-icon"></i>
-                  <span class="menu-title">Charts</span>
-                  <i class="menu-arrow"></i>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="pages/tables/basic-table.html" class="nav-link">
-                  <i class="mdi mdi-grid menu-icon"></i>
-                  <span class="menu-title">Tables</span>
-                  <i class="menu-arrow"></i>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="pages/icons/mdi.html" class="nav-link">
-                  <i class="mdi mdi-emoticon menu-icon"></i>
-                  <span class="menu-title">Icons</span>
-                  <i class="menu-arrow"></i>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="mdi mdi-codepen menu-icon"></i>
-                  <span class="menu-title">Sample Pages</span>
-                  <i class="menu-arrow"></i>
-                </a>
-                <div class="submenu">
-                    <ul class="submenu-item">
-                        <li class="nav-item"><a class="nav-link" href="pages/samples/login.html">Login</a></li>
-                        <li class="nav-item"><a class="nav-link" href="pages/samples/login-2.html">Login 2</a></li>
-                        <li class="nav-item"><a class="nav-link" href="pages/samples/register.html">Register</a></li>
-                        <li class="nav-item"><a class="nav-link" href="pages/samples/register-2.html">Register 2</a></li>
-                        <li class="nav-item"><a class="nav-link" href="pages/samples/lock-screen.html">Lockscreen</a></li>
-                    </ul>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a href="docs/documentation.html" class="nav-link">
-                  <i class="mdi mdi-file-document-box-outline menu-icon"></i>
-                  <span class="menu-title">Documentation</span></a>
+            <li class="nav-item {% if request.resolver_match.url_name == 'visited-barbershops' %}active{% endif %}">
+              <a class="nav-link p-3" href="/">
+                <i class="mdi mdi-file-document-box menu-icon"></i>
+                <span class="menu-title">Visited Barbershops</span>
+              </a>
             </li>
           </ul>
       </div>

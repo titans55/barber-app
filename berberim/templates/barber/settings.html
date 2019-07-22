@@ -18,6 +18,21 @@
         margin-bottom: 5px!important;
         margin-right: 1vh!important;
     }
+
+
+    .save-floationg {
+        position: fixed;
+        bottom: 4vh;
+        width: 100%;
+        left:0;
+    }
+
+    .floating-button {
+        width: 10%;
+        height: 5vh;
+        box-sizing: border-box;
+    }
+
 </style>
 {% endblock %}
 
@@ -25,66 +40,73 @@
 <form class="" method="post" action="{{ action }}" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="row">
-        <div class="col-md-6 grid-margin stretch-card" style="height:75vh">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">{% trans "Barbershop Settings" %}</h4>
-                    {% for field in form %}
-                        <div class="form-group">
-                            <label>{{ field.label }}</label>
-                            {{ field }}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 grid-margin stretch-card" style="height:75vh">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">{% trans "Employees" %}</h4>
-
-                    <input type="hidden" name="extra" value="{{extra}}">
-                    <div class="form-group">
-                        <fieldset>
-                        {{formset.management_form }}
-                        {% for form in formset %}
-                            <div class="form-inline">
-                                
-                                <!-- <label class="sr-only">Name</label> -->
-                                {{form.title}}
-                                {{ form.name }}
-                                <!-- <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="Jane Doe"> -->
-                                
-                                {{ form.surname }}
-                                <!-- <div class="input-group mb-2 mr-sm-2">
-                                    <div class="input-group-prepend">
-                                    <div class="input-group-text">@</div>
-                                    </div>
-                                    <input type="text" class="form-control" id="inlineFormInputGroupUsername2" placeholder="Username">
-                                </div> -->
-                                <!-- <div class="form-check mx-sm-2">
-                                    <label class="form-check-label">
-                                    <input type="checkbox" class="form-check-input" checked="">
-                                    Remember me
-                                    <i class="input-helper"></i></label>
-                                </div> -->
+        <div class="card col-md-12 grid-margin stretch-card">
+            <div class="row">
+                <div class="col-md-6 grid-margin stretch-card border" style="height:75vh">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">{% trans "Barbershop Settings" %}</h4>
+                        {% for field in form %}
+                            <div class="form-group">
+                                <label>{{ field.label }}</label>
+                                {{ field }}
                             </div>
-
                         {% endfor %}
-                        <input type="submit" name="action" value="+">
-                    </fieldset>
+                    </div>
                 </div>
-                <div style="text-align: right">
-                {% if not edit%}
-                    <input type="submit" name="action" value="Create">
-                {% else %}
-                    <input type="submit" name="action" value="Edit">
-                {% endif %}
-                </div>
+                <div class="col-md-6 grid-margin stretch-card border" style="height:75vh">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">{% trans "Employees" %}</h4>
+                        <input type="hidden" name="extra" value="{{extra}}">
+                        <div class="form-group">
+                            <fieldset>
+                                {{formset.management_form }}
+                                {% for form in formset %}
+                                <div class="form-inline">
+                                    
+                                    <!-- <label class="sr-only">Name</label> -->
+                                    {{form.title}}
+                                    {{ form.name }}
+                                    <!-- <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="Jane Doe"> -->
+                                    
+                                    {{ form.surname }}
+                                    <!-- <div class="input-group mb-2 mr-sm-2">
+                                        <div class="input-group-prepend">
+                                        <div class="input-group-text">@</div>
+                                        </div>
+                                        <input type="text" class="form-control" id="inlineFormInputGroupUsername2" placeholder="Username">
+                                    </div> -->
+                                    <!-- <div class="form-check mx-sm-2">
+                                        <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" checked="">
+                                        Remember me
+                                        <i class="input-helper"></i></label>
+                                    </div> -->
+                                </div>
+                                {% endfor %}
+                                <input type="submit" name="action" value="+" class="btn btn-success float-right mr-2">
+                            </fieldset>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
+    </div>
+    <div class="save-floationg">
+        <div class="row">
+            <div class="col-md-5"></div>
+            <div class="col-md-2">
+                    {% if not edit%}
+                    <button  type="submit" name="action" value="Create" class="floating-button btn btn-primary w-100">
+                        {% trans 'Save' %}
+                    </button>        
+                {% else %}
+                    <button  type="submit" name="action" value="Edit" class="floating-button btn btn-primary w-100">
+                        {% trans 'Edit' %}
+                    </button>        
+                {% endif %}
+            </div>
+            <div class="col-md-5"></div>
+        </div>
     </div>
 </form>
 

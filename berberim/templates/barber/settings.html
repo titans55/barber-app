@@ -51,41 +51,34 @@
                                 {{ field }}
                             </div>
                         {% endfor %}
+                        {{form.errors}}
                     </div>
                 </div>
-                <div class="col-md-6 grid-margin stretch-card border" style="height:75vh">
+                <div class="col-md-6 grid-margin stretch-card border" style="height:75vh; overflow:scroll;">
                     <div class="card-body text-center">
                         <h4 class="card-title">{% trans "Employees" %}</h4>
                         <input type="hidden" name="extra" value="{{extra}}">
                         <div class="form-group">
                             <fieldset>
                                 {{formset.management_form }}
-                                {% for form in formset %}
+                                {% for form in employee_formset %}
                                 <div class="form-inline">
-                                    
-                                    <!-- <label class="sr-only">Name</label> -->
                                     {{form.title}}
-                                    {{ form.name }}
-                                    <!-- <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="Jane Doe"> -->
-                                    
+                                    {{ form.name }}                                    
                                     {{ form.surname }}
-                                    <!-- <div class="input-group mb-2 mr-sm-2">
-                                        <div class="input-group-prepend">
-                                        <div class="input-group-text">@</div>
-                                        </div>
-                                        <input type="text" class="form-control" id="inlineFormInputGroupUsername2" placeholder="Username">
-                                    </div> -->
-                                    <!-- <div class="form-check mx-sm-2">
-                                        <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" checked="">
-                                        Remember me
-                                        <i class="input-helper"></i></label>
-                                    </div> -->
+                                </div>
+                                <div class="danger">
+                                    {{form.errors}}
                                 </div>
                                 {% endfor %}
                                 <input type="submit" name="action" value="+" class="btn btn-success float-right mr-2">
                             </fieldset>
                         </div>
+                        <h4 class="card-title">{% trans "Services" %}</h4>
+                        <div class="form-group">
+                            wololo<Br>
+
+                         </div>
                     </div>
                 </div>
             </div>
@@ -118,5 +111,8 @@
     $(()=>{
         $('.init-select2').select2();
     })
+    if ($("#myform").data("changed")) {
+        // submit the form
+    }
 </script>
 {% endblock %}

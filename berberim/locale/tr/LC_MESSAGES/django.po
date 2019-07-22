@@ -119,6 +119,9 @@ msgstr "Berber Dükkanı Ayarları"
 msgid "Employees"
 msgstr "Çalışanlar"
 
+msgid "Services"
+msgstr "Hizmetler"
+
 #: .\berberim\models.py:153
 msgid "Haircut"
 msgstr "Saç Tıraşı"
@@ -138,3 +141,12 @@ msgstr "Düzenle"
 #: .\berberim\templates\customer\barbershop.html:28
 msgid "mins"
 msgstr "dk"
+
+msgid "minutes"
+msgstr "dakika"
+
+msgid "hours"
+msgstr "saat"
+
+msgid "Reserved"
+msgstr "Rezervli"

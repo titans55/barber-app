@@ -80,7 +80,7 @@
                                 <thead>
                                     <tr>
                                         <th></th>
-                                        <th>{% trans 'Price' %}</th>
+                                        <th class="pr-5"><div class="pr-3">{% trans 'Price' %}</div></th>
                                         <th>{% trans 'Duration(minutes)' %}</th>
                                     </tr>
                                 </thead>
@@ -92,7 +92,14 @@
                                             <input type="text" value="{% trans form.name.value %}" class="form-control text-center" readonly>   
                                             {{ form.name }}
                                         </td>
-                                        <td>{{ form.price }}  </td>
+                                        <td>
+                                            <div class="input-group">
+                                            {{ form.price }}  
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">TL</span>
+                                            </div>
+                                        </div>
+                                        </td>
                                         <td>{{ form.duration_mins }}</td>
                                         <div class="danger">
                                             {{form.errors}}

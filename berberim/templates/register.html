@@ -138,10 +138,10 @@
                     console.log(state)
                     switch(state){
                         case true: 
-                            $("#id_user_type").val("2") //barber.pk
+                            $("#id_user_type").val("{{data.customer_usertype_pk}}") //customer.pk
                             break
                         case false:
-                            $("#id_user_type").val("3") //customer.pk
+                            $("#id_user_type").val("{{data.barber_usertype_pk}}") //barber.pk
                             break 
                     }
                 })

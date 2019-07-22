@@ -124,7 +124,7 @@
                 scrollWithYWheel: true,
                 locations: [
                     {% for employee in barbershop.employees %}
-                        {id: '{{employee.id}}', name: '{{employee.name}} ({{employee.title}})'}, 
+                        {id: '{{employee.id}}', name: '{{employee.name}} ({% trans employee.title %})'}, 
                     {% endfor %}
                 ],                
                 events: [

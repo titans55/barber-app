@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, UserType, Barbershop, BarbershopEmployee, EMPLOYEE_TITLES_CHOICES, Address
+from .models import User, UserType, Barbershop, BarbershopEmployee, EMPLOYEE_TITLES_CHOICES, SERVICE_NAME_CHOICES, Address, BarbershopServices
 from django.utils.translation import gettext as _
 import re
 
@@ -87,6 +87,12 @@ class BarberUserSettingsForm(forms.Form):
             )
             b.address = a
             b.save()
+            if b_created:
+                for sevice_name in SERVICE_NAME_CHOICES:
+                    BarbershopServices.objects.create(
+                        name=sevice_name[0],
+                        barbershop=b
+                    )
             return b
         except Exception as err:
             raise(err)

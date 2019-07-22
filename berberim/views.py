@@ -72,31 +72,33 @@ def user_settings(request):
                 employee_formset = formset_factory(EmployeeForm, extra=extra)(request_post)
                 
         except Barbershop.DoesNotExist:
-            form = BarberUserSettingsForm()
+            form = BarberUserSettingsForm(request_post)
             extra = 1 if extra is None else extra
-            employee_formset = formset_factory(EmployeeForm, extra=extra)
+            employee_formset = formset_factory(EmployeeForm, extra=extra)(request_post)
         return form, employee_formset, extra
 
     if 'barber' == str(user.user_type):
         if request.method == 'POST':
             if request.POST['action'] == "+":
-                form, employee_formset, extra = _init_forms_and_extra(int(float(request.POST['extra'])) + 1)
+                extra = int(float(request.POST['extra']))
+                form, employee_formset, extra = _init_forms_and_extra(extra + 1)
             else:
                 extra = int(float(request.POST['extra']))
                 form, employee_formset, extra_old = _init_forms_and_extra(extra, request.POST)
-                print ("so whaaaat")
                 if form.is_valid() and employee_formset.is_valid():
                     if request.POST['action'] == "Create":
-                        print ("where the fuck are we")
+                        print (form.changed_data, " form.changed data")
+                        barbershop = None
+                        if len(form.changed_data) > 0:
+                            barbershop = form.save(user)
                         for form_employee in employee_formset:
+                            print (form_employee.changed_data, " form_employee.changed data")
                             if not 'delete' in form_employee.cleaned_data:
-                                print(form.changed_data, "wololo")
-                                if len(form.changed_data) > 0:
-                                    pass
-                                print(form_employee.changed_data, "trololo")
-                                # form_employee.save(barbershop)
+                                if len(form_employee.changed_data) > 0:
+                                    barbershop = Barbershop.objects.get(owner=user) if barbershop is None else barbershop
+                                    form_employee.save(barbershop)
+                                    extra=0
                     elif request.POST['action'] == "Edit":
-                        print("wtf")
                         for form_employee in employee_formset:
                             if 'delete' in form_employee.cleaned_data and form_employee.cleaned_data['delete']:
                                 pass

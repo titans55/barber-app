@@ -37,8 +37,11 @@ def register(request):
         return render(request, 'register.html', {'form': form})
 
     form = RegisterForm
-    data = {'de': 'de'}
-
+    data = {
+        'de': 'de',
+        'barber_usertype_pk': UserType.objects.get(name='barber').id,
+        'customer_usertype_pk': UserType.objects.get(name='customer').id
+    }
     return render(request, 'register.html', {'data': data, 'form': form})
 
 def login_view(request):

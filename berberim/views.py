@@ -61,12 +61,18 @@ def user_settings(request):
             )
             if barbershop.employees.exists():
                 #TODO optimize this
+                print(extra, " = > extra")
                 extra = 0 if extra is None else extra
+                print(extra, " => extra before formset")
                 EmployeeFormSet = formset_factory(EmployeeForm, extra=extra)
+                print(EmployeeFormSet)
+                print(len(barbershop.employees.all()), "len barbershop.employees.all()")
                 employee_formset = EmployeeFormSet(
                     request_post,
-                    initial=[{'title': emp.title, 'name': emp.name, 'surname': emp.surname} for emp in barbershop.employees.all()]
+                    initial=[{'title': emp.title, 'name': emp.name, 'surname': emp.surname} for emp in barbershop.employees.all()],
+                    prefix='employees'
                 )
+                print(len(employee_formset), "len of employee_formset")
             else:
                 extra = 1 if extra is None else extra
                 employee_formset = formset_factory(EmployeeForm, extra=extra)(request_post)
@@ -75,19 +81,21 @@ def user_settings(request):
                 BarbershopServicesFormset = formset_factory(BarbershopServicesForm, extra=0)
                 barbershop_services_formset = BarbershopServicesFormset(
                     request_post,
-                    initial=[{'name': serv.name, 'price': serv.price, 'duration_mins': serv.duration_mins} for serv in barbershop.services.all().order_by('id')]
+                    initial=[{'name': serv.name, 'price': serv.price, 'duration_mins': serv.duration_mins} for serv in barbershop.services.all().order_by('id')],
+                    prefix='barbershop_services'
                 )
             else:
                 raise Exception('Barbershop services doesnt exists, please contact dev team.')
+            print("asddddddddddddddddd")
 
         except Barbershop.DoesNotExist:
             form = BarberUserSettingsForm(request_post)
             extra = 1 if extra is None else extra
-            employee_formset = formset_factory(EmployeeForm, extra=extra)(request_post)
+            employee_formset = formset_factory(EmployeeForm, extra=extra)(request_post, prefix='employees')
 
             BarbershopServicesFormset = formset_factory(BarbershopServicesForm, extra=3)
             barbershop_services_formset = BarbershopServicesFormset(
-                request_post
+                request_post, prefix='barbershop_services'
             )
         
         return form, employee_formset, barbershop_services_formset, extra
@@ -99,7 +107,8 @@ def user_settings(request):
                 form, employee_formset, barbershop_services_formset, extra = _init_forms_and_extra(extra + 1)
             else:
                 extra = int(float(request.POST['extra']))
-                form, employee_formset, barbershop_services_formset, extra_old = _init_forms_and_extra(extra, request.POST)
+                form, employee_formset, barbershop_services_formset, extra_old = _init_forms_and_extra(None, request.POST)
+
                 if form.is_valid() and employee_formset.is_valid() and barbershop_services_formset.is_valid():
                     if request.POST['action'] == "Create":
                         print (form.changed_data, " form.changed data")

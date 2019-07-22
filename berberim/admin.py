@@ -84,7 +84,7 @@ class BarbershopServicesAdminForm(forms.ModelForm):
 
 class BarbershopServicesAdmin(admin.ModelAdmin):
     form = BarbershopServicesAdminForm
-    list_display = ['name', 'price', 'duration_mins', 'barbershop', 'created']
+    list_display = ['id', 'name', 'price', 'duration_mins', 'barbershop', 'created']
     readonly_fields = ['created']
 
 admin.site.register(BarbershopServices, BarbershopServicesAdmin)

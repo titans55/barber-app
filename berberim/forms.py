@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, UserType, Barbershop, BarbershopEmployee, EMPLOYEE_TITLES_CHOICES, SERVICE_NAME_CHOICES, Address, BarbershopServices
+from .models import User, UserType, Barbershop, BarbershopEmployee, EMPLOYEE_TITLES_CHOICES,\
+    SERVICE_NAME_CHOICES, Address, BarbershopServices
 from django.utils.translation import gettext as _
 import re
 
@@ -143,7 +144,16 @@ class EmployeeForm(forms.ModelForm):
             raise(err)
 
 
-
-
-from django.forms import formset_factory
-# EmployeeFormset = formset_factory(EmployeeForm, extra=1)
+class BarbershopServicesForm(forms.ModelForm):
+    name = forms.CharField(
+        widget=forms.TextInput(attrs={'class':'form-control text-center', 'readonly':'readonly'})
+    )
+    price = forms.IntegerField(
+        widget=forms.NumberInput(attrs={'class':'form-control text-center'})
+    )
+    duration_mins = forms.IntegerField(
+        widget=forms.NumberInput(attrs={'class':'form-control text-center'})
+    )
+    class Meta:
+        model = BarbershopServices
+        fields = ['name', 'price', 'duration_mins']

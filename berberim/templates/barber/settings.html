@@ -76,7 +76,29 @@
                         </div>
                         <h4 class="card-title">{% trans "Services" %}</h4>
                         <div class="form-group">
-                            wololo<Br>
+                                <table class="table text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>{% trans 'Service Name' %}</th>
+                                            <th>{% trans 'Price' %}</th>
+                                            <th>{% trans 'Duration(minutes)' %}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{barbershop_services_formset.management_form }}
+                                        {% for form in barbershop_services_formset %}
+                                        <tr>
+                                            <td>{{ form.name }}</td>
+                                            <td>{{ form.price }}  </td>
+                                            <td>{{ form.duration_mins }}</td>
+                                            <div class="danger">
+                                                {{form.errors}}
+                                            </div>
+                                        </tr>
+                                        {% endfor %}
+
+                                    </tbody>
+                                </table>
 
                          </div>
                     </div>

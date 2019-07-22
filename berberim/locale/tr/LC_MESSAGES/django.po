@@ -138,6 +138,12 @@ msgstr "Kaydet"
 msgid "Edit"
 msgstr "Düzenle"
 
+msgid "Price"
+msgstr "Ücret"
+
+msgid "Duration(minutes)"
+msgstr "Süre(dakika)"
+
 #: .\berberim\templates\customer\barbershop.html:28
 msgid "mins"
 msgstr "dk"

@@ -75,7 +75,7 @@ def user_settings(request):
                 BarbershopServicesFormset = formset_factory(BarbershopServicesForm, extra=0)
                 barbershop_services_formset = BarbershopServicesFormset(
                     request_post,
-                    initial=[{'name': _(serv.name), 'price': serv.price, 'duration_mins': serv.duration_mins} for serv in barbershop.services.all().order_by('-id')]
+                    initial=[{'name': serv.name, 'price': serv.price, 'duration_mins': serv.duration_mins} for serv in barbershop.services.all().order_by('id')]
                 )
             else:
                 raise Exception('Barbershop services doesnt exists, please contact dev team.')

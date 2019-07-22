@@ -146,7 +146,8 @@ class EmployeeForm(forms.ModelForm):
 
 class BarbershopServicesForm(forms.ModelForm):
     name = forms.CharField(
-        widget=forms.TextInput(attrs={'class':'form-control text-center', 'readonly':'readonly'})
+        widget=forms.TextInput(attrs={'class':'d-none', 'readonly':'readonly'}),
+        disabled=True
     )
     price = forms.IntegerField(
         widget=forms.NumberInput(attrs={'class':'form-control text-center'})
@@ -156,4 +157,4 @@ class BarbershopServicesForm(forms.ModelForm):
     )
     class Meta:
         model = BarbershopServices
-        fields = ['name', 'price', 'duration_mins']
+        fields = ['name', 'price', 'duration_mins']        

@@ -32,13 +32,13 @@ def landing(request):
             return redirect('user-settings')
 
 
-    elif 'customer' is str(user.user_type):
-        barbarshops = Barbershop.objects.all()
-        data = {'barbershops': barbarshops}
+    elif 'customer' == str(user.user_type):
+        barbershops = Barbershop.objects.all()
+        data = {'barbershops': barbershops}
 
     
     return render(request, str(user.user_type) + '/dashboard.html',
-                  {'data': data})
+                  {'data': data, 'user': user})
 
 @login_required
 def user_settings(request):

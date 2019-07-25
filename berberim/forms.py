@@ -4,6 +4,11 @@ from .models import User, UserType, Barbershop, BarbershopEmployee, EMPLOYEE_TIT
     SERVICE_NAME_CHOICES, Address, BarbershopServices
 from django.utils.translation import gettext as _
 import re
+from django.core.validators import RegexValidator
+
+
+alphanumeric = RegexValidator(r'^[0-9a-zA-Z]*$', 'Only alphanumeric characters are allowed.') 
+#TODO make validators work, For example you can assign numeric values to employee names currently
 
 
 class RegisterForm(UserCreationForm):
@@ -100,12 +105,18 @@ class BarberUserSettingsForm(forms.Form):
 
 
 class EmployeeForm(forms.ModelForm):
+    id = forms.IntegerField(
+        widget= forms.NumberInput(attrs={'class':'d-none', 'readonly':'readonly'}),
+        disabled=True,
+        required=False #so we can create employee
+    )
+
     name = forms.CharField(
         widget= forms.TextInput(
             attrs={
                 'class':'form-control mb-2 mr-sm-2',
                 'placeholder':_('Name'),
-                'style':'width:35%'
+                'style':'width:35%',
             },
         ),
     )
@@ -129,22 +140,35 @@ class EmployeeForm(forms.ModelForm):
     )
     class Meta:
         model = BarbershopEmployee
-        fields = ['title', 'name', 'surname']
+        fields = ['id', 'title', 'name', 'surname']
 
     def save(self, barbershop):
         try:
+            if self.cleaned_data['id'] is None:
+                raise(BarbershopEmployee.DoesNotExist)
+
+            employee = BarbershopEmployee.objects.filter(
+                id=self.cleaned_data['id'],
+            ).update(**self.cleaned_data)
+
+            return employee
+        except BarbershopEmployee.DoesNotExist as err:
+
             employee = BarbershopEmployee.objects.create(
                 name=self.cleaned_data['name'],
                 surname=self.cleaned_data['surname'],
                 title=self.cleaned_data['title'],
                 barbershop=barbershop
             )
+
             return employee
-        except Exception as err:
-            raise(err)
 
 
 class BarbershopServicesForm(forms.ModelForm):
+    id = forms.IntegerField(
+        widget= forms.NumberInput(attrs={'class':'d-none', 'readonly':'readonly'}),
+        disabled=True
+    )
     name = forms.CharField(
         widget=forms.TextInput(attrs={'class':'d-none', 'readonly':'readonly'}),
         disabled=True
@@ -157,4 +181,14 @@ class BarbershopServicesForm(forms.ModelForm):
     )
     class Meta:
         model = BarbershopServices
-        fields = ['name', 'price', 'duration_mins']        
+        fields = ['id', 'name', 'price', 'duration_mins']        
+
+    def save(self, barbershop):
+        try:
+            barbershop_service = BarbershopServices.objects.filter(
+                id=self.cleaned_data['id'],
+            ).update(**self.cleaned_data)
+
+            return barbershop_service
+        except Exception as err:
+            raise(err)

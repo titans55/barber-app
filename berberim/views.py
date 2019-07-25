@@ -17,6 +17,8 @@ from django.utils import timezone
 from .forms import BarberUserSettingsForm, EmployeeForm, BarbershopServicesForm
 from django.forms import formset_factory
 
+from pprint import pprint
+
 @login_required
 def landing(request):
     user = request.user
@@ -61,18 +63,18 @@ def user_settings(request):
             )
             if barbershop.employees.exists():
                 #TODO optimize this
-                print(extra, " = > extra")
+               # print(extra, " = > extra")
                 extra = 0 if extra is None else extra
-                print(extra, " => extra before formset")
+               # print(extra, " => extra before formset")
                 EmployeeFormSet = formset_factory(EmployeeForm, extra=extra)
-                print(EmployeeFormSet)
-                print(len(barbershop.employees.all()), "len barbershop.employees.all()")
+                #print(EmployeeFormSet)
+               # print(len(barbershop.employees.all()), "len barbershop.employees.all()")
                 employee_formset = EmployeeFormSet(
                     request_post,
-                    initial=[{'title': emp.title, 'name': emp.name, 'surname': emp.surname} for emp in barbershop.employees.all()],
+                    initial=[{'id': emp.id, 'title': emp.title, 'name': emp.name, 'surname': emp.surname} for emp in barbershop.employees.all()],
                     prefix='employees'
                 )
-                print(len(employee_formset), "len of employee_formset")
+                # print(len(employee_formset), "len of employee_formset")
             else:
                 extra = 1 if extra is None else extra
                 employee_formset = formset_factory(EmployeeForm, extra=extra)(request_post)
@@ -81,14 +83,13 @@ def user_settings(request):
                 BarbershopServicesFormset = formset_factory(BarbershopServicesForm, extra=0)
                 barbershop_services_formset = BarbershopServicesFormset(
                     request_post,
-                    initial=[{'name': serv.name, 'price': serv.price, 'duration_mins': serv.duration_mins} for serv in barbershop.services.all().order_by('id')],
+                    initial=[{'id':serv.id, 'name': serv.name, 'price': serv.price, 'duration_mins': serv.duration_mins} for serv in barbershop.services.all().order_by('id')],
                     prefix='barbershop_services'
                 )
             else:
                 raise Exception('Barbershop services doesnt exists, please contact dev team.')
-            print("asddddddddddddddddd")
 
-        except Barbershop.DoesNotExist:
+        except Barbershop.DoesNotExist as err:
             form = BarberUserSettingsForm(request_post)
             extra = 1 if extra is None else extra
             employee_formset = formset_factory(EmployeeForm, extra=extra)(request_post, prefix='employees')
@@ -102,60 +103,79 @@ def user_settings(request):
 
     if 'barber' == str(user.user_type):
         if request.method == 'POST':
-            if request.POST['action'] == "+":
-                extra = int(float(request.POST['extra']))
-                form, employee_formset, barbershop_services_formset, extra = _init_forms_and_extra(extra + 1)
-            else:
-                extra = int(float(request.POST['extra']))
-                form, employee_formset, barbershop_services_formset, extra_old = _init_forms_and_extra(None, request.POST)
+            extra = int(float(request.POST['extra'])) if Barbershop.objects.filter(owner=user).exists() else None
+            form, employee_formset, barbershop_services_formset, extra = _init_forms_and_extra(extra, request.POST)
 
-                if form.is_valid() and employee_formset.is_valid() and barbershop_services_formset.is_valid():
-                    if request.POST['action'] == "Create":
-                        print (form.changed_data, " form.changed data")
-                        barbershop = None
-                        if len(form.changed_data) > 0:
-                            barbershop = form.save(user)
-                        for form_employee in employee_formset:
-                            print (form_employee.changed_data, " form_employee.changed data")
-                            if not 'delete' in form_employee.cleaned_data:
-                                if len(form_employee.changed_data) > 0:
-                                    barbershop = Barbershop.objects.get(owner=user) if barbershop is None else barbershop
-                                    form_employee.save(barbershop)
-                                    extra=0
-                        for form_barbershop_service in barbershop_services_formset:
-                            print (form_barbershop_service.changed_data, " form_barbershop_service.changed data")
-                            if not 'delete' in form_barbershop_service.cleaned_data:
-                                if len(form_barbershop_service.changed_data) > 0:
-                                    barbershop = Barbershop.objects.get(owner=user) if barbershop is None else barbershop
-                                    form_barbershop_service.save(barbershop)
-                                    
-                    elif request.POST['action'] == "Edit":
-                        for form_employee in employee_formset:
-                            if 'delete' in form_employee.cleaned_data and form_employee.cleaned_data['delete']:
-                                pass
-                                # delete data
-                            else:
-                                pass
-                                # create data
+            if not Barbershop.objects.filter(owner=user).exists():
+                form, employee_formset, barbershop_services_formset, extra = _init_forms_and_extra(None, request.POST) #TODO can we remove this line?
+                if form.is_valid():
+                    barbershop = form.save(user)
+                    form, employee_formset, barbershop_services_formset, extra = _init_forms_and_extra()
+
+
+
+            elif form.is_valid() and employee_formset.is_valid() and barbershop_services_formset.is_valid():
+
+                print("form.is_valid() ", form.is_valid())
+                print("employee_formset.is_valid() ", employee_formset.is_valid())
+                print("barbershop_services_formset.is_valid ", barbershop_services_formset.is_valid())
+
+                if request.POST['action'] == "Create":
+                #    print (form.changed_data, " form.changed data")
+                    barbershop = None
+                    if len(form.changed_data) > 0:
+                        barbershop = form.save(user)
+                    for form_employee in employee_formset:
+                     #   print (form_employee.changed_data, " form_employee.changed data")
+                        if not 'delete' in form_employee.cleaned_data:
+                            if len(form_employee.changed_data) > 0:
+                                barbershop = barbershop if barbershop is not None else Barbershop.objects.get(owner=user)
+                                form_employee.save(barbershop)
+                                extra=0
+                    for form_barbershop_service in barbershop_services_formset:
+                   #     print (form_barbershop_service.changed_data, " form_barbershop_service.changed data")
+                        if not 'delete' in form_barbershop_service.cleaned_data:
+                            if len(form_barbershop_service.changed_data) > 0:
+                                barbershop = barbershop if barbershop is not None else Barbershop.objects.get(owner=user)
+                                form_barbershop_service.save(barbershop)
+                                
+                elif request.POST['action'] == "Edit":
+                    for form_employee in employee_formset:
+                        if 'delete' in form_employee.cleaned_data and form_employee.cleaned_data['delete']:
+                            pass
+                            # delete data
+                        else:
+                            pass
+                            # create data
                     
             return render(
                 request,
                 str(user.user_type) + '/settings.html',
-                {'user': user, 'form': form, 'employee_formset':employee_formset,
-                'barbershop_services_formset':barbershop_services_formset, 'extra': extra}
+                {'user': user, 'form': form, 'employee_formset': employee_formset,
+                'barbershop_services_formset':barbershop_services_formset, 'extra':extra}
             )
         
-        form, employee_formset, barbershop_services_formset, extra = _init_forms_and_extra()
+        elif request.method == 'GET':
+            if not Barbershop.objects.filter(owner=user).exists():
+                form, employee_formset, barbershop_services_formset, extra = _init_forms_and_extra()
+                return render(
+                    request,
+                    str(user.user_type) + '/settings.html',
+                    {'user': user, 'form': form, 'extra': extra}
+                )
 
-        return render(
-            request,
-            str(user.user_type) + '/settings.html',
-            {'user': user, 'form': form, 'employee_formset':employee_formset,
-            'barbershop_services_formset':barbershop_services_formset, 'extra': extra}
-        )
 
+            form, employee_formset, barbershop_services_formset, extra = _init_forms_and_extra()
+            # print(barbershop_services_formset)
+            return render(
+                request,
+                str(user.user_type) + '/settings.html',
+                {'user': user, 'form': form, 'employee_formset': employee_formset,
+                'barbershop_services_formset':barbershop_services_formset, 'extra': extra}
+            )
 
-    return render(request, str(user.user_type) + '/settings.html', {'data': data})
+    else:
+        pass
 
 @login_required
 def map(request):

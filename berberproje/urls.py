@@ -19,5 +19,6 @@ from django.urls import include, path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('berberim.urls')),
+    path('api/', include('berberimapi.urls')),
 
 ]

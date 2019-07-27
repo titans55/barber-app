@@ -18,6 +18,8 @@ from .forms import BarberUserSettingsForm, EmployeeForm, BarbershopServicesForm
 from django.forms import formset_factory
 
 from pprint import pprint
+import slumber
+import requests
 
 @login_required
 def landing(request):
@@ -187,32 +189,12 @@ def map(request):
 
 @login_required
 def barbershop(request, barbershop_slug):
-    print(barbershop_slug)
-    user = request.user
 
-    try:
-        barbershop = Barbershop.objects.get(slug=barbershop_slug)
-    except:
-        return HttpResponseNotFound("hello")    
-
-    # barbershop.employees = list(barbershop.employees.all().values())
-    print(list(barbershop.schedules.all().values()))
-    now = timezone.localtime(timezone.now())
-
-    data = {
-        'barbershop': {
-            'name': barbershop.name,
-            'id': barbershop.id,
-            'services': list(barbershop.services.all().values()),
-            'employees': list(barbershop.employees.all().values()),
-            'schedules': list(barbershop.schedules.filter(start_time__day=now.day).values(
-                'start_time__hour', 'start_time__minute', 'end_time__hour', 'end_time__minute', 'assigned_employee'
-                ))
-        }
-    }
-    data = json.loads(json.dumps(data, cls=DjangoJSONEncoder))
+    response = requests.get('http://localhost:8000/api/barbershops', params={'barbershop_slug':barbershop_slug})
+    data = json.loads(json.dumps(response.json(), cls=DjangoJSONEncoder))
     print(data)
-    return render(request, str(user.user_type) + '/barbershop.html', data)
+   
+    return render(request, str('customer') + '/barbershop.html', data)
 
 @login_required
 def schedule_customer(request):

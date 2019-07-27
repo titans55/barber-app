@@ -188,9 +188,9 @@ def map(request):
     return render(request, str(user.user_type) + '/map.html', {'data': data})
 
 @login_required
-def barbershop(request, barbershop_slug):
-
-    response = requests.get('http://localhost:8000/api/barbershop', params={'barbershop_slug':barbershop_slug})
+def barbershop(request, **args):
+    #args is {'barbershop_slug':barbershop_slug} in this case
+    response = requests.get('http://localhost:8000/api/barbershop', params=args)
     data = response.json()
    
     return render(request, str('customer') + '/barbershop.html', data)

@@ -190,9 +190,8 @@ def map(request):
 @login_required
 def barbershop(request, barbershop_slug):
 
-    response = requests.get('http://localhost:8000/api/barbershops', params={'barbershop_slug':barbershop_slug})
+    response = requests.get('http://localhost:8000/api/barbershop', params={'barbershop_slug':barbershop_slug})
     data = json.loads(json.dumps(response.json(), cls=DjangoJSONEncoder))
-    print(data)
    
     return render(request, str('customer') + '/barbershop.html', data)
 

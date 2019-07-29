@@ -9,7 +9,7 @@ urlpatterns = [
     #customer
     path('barbershop-map', views.map, name='barbershop-map'),
     path('barbershop/<slug:barbershop_slug>', views.barbershop_view.as_view(), name='barbershop'),
-    path('user-settings', views.user_settings, name='user-settings'),
+    path('user-settings', views.user_settings_view.as_view(), name='user-settings'),
 
 
     #AJAX CALL

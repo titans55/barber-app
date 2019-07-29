@@ -39,7 +39,7 @@
                 <div id="container"></div>
                 <div class="row">
                     <div class="col">
-                        <form action="{% url 'schedule'%}" method="post">
+                        <form action="{% url 'barbershop' barbershop_slug=barbershop.slug%}" method="post">
                         {% csrf_token %}
                             <input id="startTimeInput" type="hidden" name="startTime" value="" />
                             <input id="endTimeInput" type="hidden" name="endTime" value="" />

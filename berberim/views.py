@@ -18,6 +18,7 @@ from .forms import BarberUserSettingsForm, EmployeeForm, BarbershopServicesForm
 from django.forms import formset_factory
 
 from pprint import pprint
+from django.views import View
 
 @login_required
 def landing(request):
@@ -185,56 +186,53 @@ def map(request):
 
     return render(request, str(user.user_type) + '/map.html', {'data': data})
 
-@login_required
-def barbershop(request, barbershop_slug):
-    print(barbershop_slug)
-    user = request.user
+class barbershop_view(View):
+    login_required = True
 
-    try:
-        barbershop = Barbershop.objects.get(slug=barbershop_slug)
-    except:
-        return HttpResponseNotFound("hello")    
+    def get(self, request, barbershop_slug):
+        user = request.user
 
-    # barbershop.employees = list(barbershop.employees.all().values())
-    print(list(barbershop.schedules.all().values()))
-    now = timezone.localtime(timezone.now())
+        try:
+            barbershop = Barbershop.objects.get(slug=barbershop_slug)
+        except:
+            return HttpResponseNotFound("hello")    
 
-    data = {
-        'barbershop': {
-            'name': barbershop.name,
-            'id': barbershop.id,
-            'services': list(barbershop.services.all().values()),
-            'employees': list(barbershop.employees.all().values()),
-            'schedules': list(barbershop.schedules.filter(start_time__day=now.day).values(
-                'start_time__hour', 'start_time__minute', 'end_time__hour', 'end_time__minute', 'assigned_employee'
-                ))
+        now = timezone.localtime(timezone.now())
+
+        data = {
+            'barbershop': {
+                'name': barbershop.name,
+                'slug': barbershop.slug,
+                'id': barbershop.id,
+                'services': list(barbershop.services.all().values()),
+                'employees': list(barbershop.employees.all().values()),
+                'schedules': list(barbershop.schedules.filter(start_time__day=now.day).values(
+                    'start_time__hour', 'start_time__minute', 'end_time__hour', 'end_time__minute', 'assigned_employee'
+                    ))
+            }
         }
-    }
-    data = json.loads(json.dumps(data, cls=DjangoJSONEncoder))
-    print(data)
-    return render(request, str(user.user_type) + '/barbershop.html', data)
+        data = json.loads(json.dumps(data, cls=DjangoJSONEncoder))
+        print(data)
+        return render(request, str(user.user_type) + '/barbershop.html', data)
 
-@login_required
-def schedule_customer(request):
-    user = request.user
+    def post(self, request, barbershop_slug=None):
+        user = request.user
 
-    start_time = parser.parse(request.POST['startTime'])
-    end_time = parser.parse(request.POST['endTime'])
-    services = request.POST['services'].split(',')
-    employee_id = request.POST['employeeID']
-    barbershop_id = request.POST['barbershopID']
-    print(start_time, "wololo")
+        start_time = parser.parse(request.POST['startTime'])
+        end_time = parser.parse(request.POST['endTime'])
+        services = request.POST['services'].split(',')
+        employee_id = request.POST['employeeID']
+        barbershop_id = request.POST['barbershopID']
 
-    print(services)
-    try:
-        BarbershopSchedule.objects.create(
-            start_time=start_time,
-            end_time=end_time,
-            services=services,
-            barbershop_id=barbershop_id,
-            assigned_employee_id=employee_id,
-            customer=request.user
-        )
-    except Exception as err:
-        raise err
-    return redirect("landing")
+        try:
+            BarbershopSchedule.objects.create(
+                start_time=start_time,
+                end_time=end_time,
+                services=services,
+                barbershop_id=barbershop_id,
+                assigned_employee_id=employee_id,
+                customer=request.user
+            )
+        except Exception as err:
+            raise err
+        return redirect("landing")

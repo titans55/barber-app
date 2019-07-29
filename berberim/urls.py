@@ -8,15 +8,13 @@ urlpatterns = [
 
     #customer
     path('barbershop-map', views.map, name='barbershop-map'),
-    path('barbershop/<slug:barbershop_slug>', views.barbershop, name='barbershop'),
+    path('barbershop/<slug:barbershop_slug>', views.barbershop_view.as_view(), name='barbershop'),
     path('user-settings', views.user_settings, name='user-settings'),
 
 
     #AJAX CALL
 
 
-    #FORM CALL
-    path('schedule', views.schedule_customer, name='schedule'),
 
 
     #AUTH

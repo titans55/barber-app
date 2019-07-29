@@ -8,7 +8,7 @@ urlpatterns = [
 
     #customer
     path('barbershop-map', views.map, name='barbershop-map'),
-    path('barbershop/<slug:barbershop_slug>', views.barbershop, name='barbershop'),
+    path('barbershop/<slug:barbershop_slug>', views.barbershopView.as_view(), name='barbershop'),
     path('user-settings', views.user_settings, name='user-settings'),
 
 

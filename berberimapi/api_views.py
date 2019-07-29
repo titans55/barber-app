@@ -12,6 +12,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 
 class BarbershopsView(APIView):
+
     def get(self, request):
         print("yess you are in rest")
         # user = request.user
@@ -31,6 +32,7 @@ class BarbershopsView(APIView):
         data = {
             'barbershop': {
                 'name': barbershop.name,
+                'slug': barbershop.slug,
                 'id': barbershop.id,
                 'services': list(barbershop.services.all().values()),
                 'employees': list(barbershop.employees.all().values()),

@@ -20,6 +20,7 @@ from django.forms import formset_factory
 from pprint import pprint
 import slumber
 import requests
+from django.views import View
 
 @login_required
 def landing(request):
@@ -194,6 +195,41 @@ def barbershop(request, **args):
     data = response.json()
    
     return render(request, str('customer') + '/barbershop.html', data)
+
+class barbershopView(View):
+    login_required = True
+
+    def get(self, request, barbershop_slug):
+        args = self.kwargs
+        response = requests.get('http://localhost:8000/api/barbershop', params=args)
+        data = response.json()
+    
+        return render(request, str('customer') + '/barbershop.html', data)
+
+    def post(self, request, barbershop_slug=None):
+        user = request.user
+
+        start_time = parser.parse(request.POST['startTime'])
+        end_time = parser.parse(request.POST['endTime'])
+        services = request.POST['services'].split(',')
+        employee_id = request.POST['employeeID']
+        barbershop_id = request.POST['barbershopID']
+        print(start_time, "wololo")
+
+        print(services)
+        try:
+            BarbershopSchedule.objects.create(
+                start_time=start_time,
+                end_time=end_time,
+                services=services,
+                barbershop_id=barbershop_id,
+                assigned_employee_id=employee_id,
+                customer=request.user
+            )
+        except Exception as err:
+            raise err
+        return redirect("landing")
+        
 
 @login_required
 def schedule_customer(request):

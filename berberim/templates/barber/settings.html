@@ -34,6 +34,31 @@
     }
 
 </style>
+
+<style>
+    /* Always set the map height explicitly to define the size of the div
+        * element that contains the map. */
+    #map {
+        height: 30vh;
+    }
+
+    .centerMarker{
+        position:absolute;
+        /*url of the marker*/
+        background:url(http://maps.gstatic.com/mapfiles/markers2/marker.png) no-repeat;
+        /*center the marker*/
+        top:50%;left:50%;
+
+        z-index:1;
+        /*fix offset when needed*/
+        margin-left:-10px;
+        margin-top:-34px;
+        /*size of the image*/
+        height:34px;
+        width:20px;
+        cursor:pointer;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -42,7 +67,7 @@
     <div class="row">
         <div class="card col-md-12 grid-margin stretch-card">
             <div class="row">
-                <div class="col-md-6 grid-margin stretch-card border" style="height:75vh">
+                {% if not user.barbershops.all.exists %} 
                     <div class="card-body text-center">
                         <h4 class="card-title">{% trans "Barbershop Settings" %}</h4>
                         {% for field in form %}
@@ -52,73 +77,100 @@
                             </div>
                         {% endfor %}
                         {{form.errors}}
-                    </div>
-                </div>
-                <div class="col-md-6 grid-margin stretch-card border" style="height:75vh; overflow:scroll;">
-
-                    <div class="card-body text-center">
-                        {% if employee_formset %}
-
-                        <h4 class="card-title">{% trans "Employees" %}</h4>
-                        <input id="extra" type="hidden" name="extra" value="{{extra}}">
                         <div class="form-group">
-                            <fieldset>
-                                {{employee_formset.management_form }}
-                                {% for form in employee_formset %}
-                                <div class="form-inline form-row">
-                                    <div class="employee_id_input d-none">{{form.id}}</div>
-                                    {{ form.title }}
-                                    {{ form.name }}                                    
-                                    {{ form.surname }}
-                                    {{form.errors}}
-                                </div>
-                                {% endfor %}
-                                <!-- <input type="submit" name="action" value="+" class="btn btn-success float-right mr-2"> -->
-                                <button class="btn btn-success add-form-row float-right mr-4">+</button>
-                            </fieldset>
-                        </div>
-                        {% endif %}
-                        {% if barbershop_services_formset %}
-                            <h4 class="card-title">{% trans "Services" %}</h4>
-                            <div class="form-group">
-                                <table class="table text-center">
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th class="pr-5"><div class="pr-3">{% trans 'Price' %}</div></th>
-                                            <th>{% trans 'Duration(minutes)' %}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {{barbershop_services_formset.management_form }}
-                                        {% for form in barbershop_services_formset %}
-                                        <tr>
-                                            {{ form.id }}
-                                            <td>
-                                                <input type="text" value="{% trans form.name.value %}" class="form-control text-center" readonly>   
-
-                                                {{ form.name }}
-                                            </td>
-                                            <td>
-                                                <div class="input-group">
-                                                {{ form.price }}  
-                                                <div class="input-group-append">
-                                                    <span class="input-group-text">TL</span>
-                                                </div>
-                                            </div>
-                                            </td>
-                                            <td>{{ form.duration_mins }}</td>
-                                            <div class="danger">
-                                                {{form.errors}}
-                                            </div>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                            <div id="map"></div>
+                            <div>
+                                <input id="address" type="textbox" value="Sydney, NSW">
+                                <input type="button" value="Encode" onclick="codeAddress()">
                             </div>
-                        {% endif %}
+                        </div>
                     </div>
-                </div>
+                {% else %} 
+                    <div class="col-md-6 grid-margin stretch-card border" style="height:75vh;">
+                        <div class="card-body text-center">
+                            <h4 class="card-title">{% trans "Barbershop Settings" %}</h4>
+                            {% for field in form %}
+                                <div class="form-group">
+                                    <label>{{ field.label }}</label>
+                                    {{ field }}
+                                </div>
+                            {% endfor %}
+                            {{form.errors}}
+                            <div class="form-group">
+                                <div id="map"></div>
+                                <div>
+                                    <input id="address" type="textbox" value="Sydney, NSW">
+                                    <input type="button" value="Encode" onclick="codeAddress()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 grid-margin stretch-card border" style="height:75vh; overflow:scroll;">
+    
+                        <div class="card-body text-center">
+                            {% if employee_formset %}
+    
+                            <h4 class="card-title">{% trans "Employees" %}</h4>
+                            <input id="extra" type="hidden" name="extra" value="{{extra}}">
+                            <div class="form-group">
+                                <fieldset>
+                                    {{employee_formset.management_form }}
+                                    {% for form in employee_formset %}
+                                    <div class="form-inline form-row">
+                                        <div class="employee_id_input d-none">{{form.id}}</div>
+                                        {{ form.title }}
+                                        {{ form.name }}                                    
+                                        {{ form.surname }}
+                                        {{form.errors}}
+                                    </div>
+                                    {% endfor %}
+                                    <!-- <input type="submit" name="action" value="+" class="btn btn-success float-right mr-2"> -->
+                                    <button class="btn btn-success add-form-row float-right mr-4">+</button>
+                                </fieldset>
+                            </div>
+                            {% endif %}
+                            {% if barbershop_services_formset %}
+                                <h4 class="card-title">{% trans "Services" %}</h4>
+                                <div class="form-group">
+                                    <table class="table text-center">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th class="pr-5"><div class="pr-3">{% trans 'Price' %}</div></th>
+                                                <th>{% trans 'Duration(minutes)' %}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {{barbershop_services_formset.management_form }}
+                                            {% for form in barbershop_services_formset %}
+                                            <tr>
+                                                {{ form.id }}
+                                                <td>
+                                                    <input type="text" value="{% trans form.name.value %}" class="form-control text-center" readonly>   
+    
+                                                    {{ form.name }}
+                                                </td>
+                                                <td>
+                                                    <div class="input-group">
+                                                    {{ form.price }}  
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">TL</span>
+                                                    </div>
+                                                </div>
+                                                </td>
+                                                <td>{{ form.duration_mins }}</td>
+                                                <div class="danger">
+                                                    {{form.errors}}
+                                                </div>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -143,12 +195,13 @@
 
 {% endblock %}
 
-
 {% block footerjs %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAU9A4B2NgJQvun4QqrQkBVS0e3a4ZCO4A&callback=initMap" async defer></script>
 <script>
+    var map;
+    var geocoder;
     $(()=>{
         $('.init-select2').select2();
-
         $(document).on('click', '.add-form-row', function(e){
             e.preventDefault();
             $(".init-select2").select2("destroy")
@@ -224,7 +277,38 @@
         return false;
     }
 
+    function initMap() {
+        geocoder = new google.maps.Geocoder();
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: -34.397, lng: 150.644},
+            zoom: 8,
+            fullscreenControl: false,
+        });
+        map.setOptions({draggable: true});
+        google.maps.event.addListener(map, 'dragend', function() {
+            writeCenterOfMapToCoordsForm()
+        });
 
+        $('<div/>').addClass('centerMarker').appendTo(map.getDiv())
+    }
 
+    function codeAddress() {
+        var address = document.getElementById('address').value;
+        geocoder.geocode( { 'address': address}, function(results, status) {
+            if (status == 'OK') {
+                map.setCenter(results[0].geometry.location);
+                map.setZoom(15);
+                writeCenterOfMapToCoordsForm()
+            } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    }
+
+    function writeCenterOfMapToCoordsForm(){
+        const mapCenter = map.getCenter()
+        console.log("map center = ", mapCenter.lat(), mapCenter.lng())
+        //fill the coords field 
+    }
 </script>
 {% endblock %}

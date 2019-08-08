@@ -60,6 +60,11 @@ class UserForm(forms.ModelForm):
         fields = ['email', 'password']
 
 class BarberUserSettingsForm(forms.Form):
+    barbershop_id = forms.IntegerField(
+        widget=forms.HiddenInput(),
+        disabled=True,
+        required=False #so we can create barbershop on first login
+    )
     barbershop_name = forms.CharField(
         widget= forms.TextInput(
             attrs={
@@ -81,27 +86,79 @@ class BarberUserSettingsForm(forms.Form):
         required=False,
         label=_('Address')
     )
+    address_lat = forms.DecimalField(
+        decimal_places=6,
+        widget=forms.HiddenInput(),
+    )
+    address_lng = forms.DecimalField(
+        decimal_places=6,
+        widget=forms.HiddenInput(),
+    )
+
     def save(self, user):
-        try: 
-            b, b_created = Barbershop.objects.get_or_create(
-                name=self.cleaned_data['barbershop_name'],
+
+        try:
+            if self.cleaned_data['barbershop_id'] is None:
+                raise(Barbershop.DoesNotExist)
+
+            barbershop = Barbershop.objects.get(
+                id=self.cleaned_data['barbershop_id'],
                 owner=user
             )
-            a, a_created = address_instance = Address.objects.get_or_create(
+            barbershop.name = self.cleaned_data['barbershop_name']
+            barbershop.save()
+
+            barbershop.address.description = self.cleaned_data['address_description']
+            barbershop.address.lat = self.cleaned_data['address_lat']
+            barbershop.address.lng = self.cleaned_data['address_lng']
+            barbershop.address.save()
+
+            return barbershop
+            
+        except Barbershop.DoesNotExist as err:
+
+            barbershop = Barbershop.objects.create(
+                name=self.cleaned_data['barbershop_name'],
+                owner=user,
+            )
+
+            for sevice_name in SERVICE_NAME_CHOICES:
+                BarbershopServices.objects.create(
+                    name=sevice_name[0],
+                    barbershop=barbershop
+                )
+
+            address = Address.objects.create(
                 description=self.cleaned_data['address_description'],
+                lat=self.cleaned_data['address_lat'],
+                lng=self.cleaned_data['address_lng'],
                 created_by=user
             )
-            b.address = a
-            b.save()
-            if b_created:
-                for sevice_name in SERVICE_NAME_CHOICES:
-                    BarbershopServices.objects.create(
-                        name=sevice_name[0],
-                        barbershop=b
-                    )
-            return b
-        except Exception as err:
-            raise(err)
+            barbershop.address = address
+            barbershop.save()
+            
+            return barbershop
+
+        # try: 
+        #     b, b_created = Barbershop.objects.get_or_create(
+        #         name=self.cleaned_data['barbershop_name'],
+        #         owner=user
+        #     )
+        #     a, a_created = address_instance = Address.objects.get_or_create(
+        #         description=self.cleaned_data['address_description'],
+        #         created_by=user
+        #     )
+        #     b.address = a
+        #     b.save()
+        #     if b_created:
+        #         for sevice_name in SERVICE_NAME_CHOICES:
+        #             BarbershopServices.objects.create(
+        #                 name=sevice_name[0],
+        #                 barbershop=b
+        #             )
+        #     return b
+        # except Exception as err:
+        #     raise(err)
 
 
 class EmployeeForm(forms.ModelForm):

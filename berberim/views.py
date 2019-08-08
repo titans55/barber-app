@@ -56,7 +56,7 @@ class user_settings_view(View):
                 return render(
                     request,
                     str(user.user_type) + '/settings.html',
-                    {'user': user, 'form': form, 'extra': extra}
+                    {'user': user, 'barbershop_form': form, 'extra': extra}
                 )
 
 
@@ -65,7 +65,7 @@ class user_settings_view(View):
             return render(
                 request,
                 str(user.user_type) + '/settings.html',
-                {'user': user, 'form': form, 'employee_formset': employee_formset,
+                {'user': user, 'barbershop_form': form, 'employee_formset': employee_formset,
                 'barbershop_services_formset':barbershop_services_formset, 'extra': extra}
             )
         else:
@@ -122,14 +122,17 @@ class user_settings_view(View):
         return render(
             request,
             str(user.user_type) + '/settings.html',
-            {'user': user, 'form': form, 'employee_formset': employee_formset,
+            {'user': user, 'barbershop_form': form, 'employee_formset': employee_formset,
             'barbershop_services_formset':barbershop_services_formset, 'extra':extra}
         )
 
     def _get_barbershop_user_settings_form_initial_data(self, barbershop):
         return {
-            'barbershop_name':barbershop.name,
-            'address_description':barbershop.address.description
+            'barbershop_id': barbershop.id,
+            'barbershop_name': barbershop.name,
+            'address_description': barbershop.address.description,
+            'address_lat': barbershop.address.lat,
+            'address_lng': barbershop.address.lng,
         }
 
     def _init_forms_and_extra(self, extra=None, request_post=None):

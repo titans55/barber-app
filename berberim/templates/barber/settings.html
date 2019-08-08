@@ -70,42 +70,16 @@
                 {% if not user.barbershops.all.exists %} 
                     <div class="card-body text-center">
                         <h4 class="card-title">{% trans "Barbershop Settings" %}</h4>
-                        {% for field in form %}
-                            <div class="form-group">
-                                <label>{{ field.label }}</label>
-                                {{ field }}
-                            </div>
-                        {% endfor %}
-                        {{form.errors}}
-                        <div class="form-group">
-                            <div id="map"></div>
-                            <div>
-                                <input id="address" type="textbox" value="Sydney, NSW">
-                                <input type="button" value="Encode" onclick="codeAddress()">
-                            </div>
-                        </div>
+                        {% include "barber/forms/barbershop_form.html" with barbershop_form=barbershop_form %}
                     </div>
                 {% else %} 
-                    <div class="col-md-6 grid-margin stretch-card border" style="height:75vh;">
+                    <div class="col-md-6 grid-margin stretch-card border" style="height:90vh;">
                         <div class="card-body text-center">
                             <h4 class="card-title">{% trans "Barbershop Settings" %}</h4>
-                            {% for field in form %}
-                                <div class="form-group">
-                                    <label>{{ field.label }}</label>
-                                    {{ field }}
-                                </div>
-                            {% endfor %}
-                            {{form.errors}}
-                            <div class="form-group">
-                                <div id="map"></div>
-                                <div>
-                                    <input id="address" type="textbox" value="Sydney, NSW">
-                                    <input type="button" value="Encode" onclick="codeAddress()">
-                                </div>
-                            </div>
+                            {% include "barber/forms/barbershop_form.html" with barbershop_form=barbershop_form %}
                         </div>
                     </div>
-                    <div class="col-md-6 grid-margin stretch-card border" style="height:75vh; overflow:scroll;">
+                    <div class="col-md-6 grid-margin stretch-card border" style="height:90vh;">
     
                         <div class="card-body text-center">
                             {% if employee_formset %}
@@ -279,9 +253,17 @@
 
     function initMap() {
         geocoder = new google.maps.Geocoder();
+        let lat, lng;
+        if($("#id_address_lat").val()){
+            lat = parseFloat($("#id_address_lat").val())
+            lng = parseFloat($("#id_address_lng").val())
+        }else{
+            lat = -34.397
+            lng = 150.644
+        }
         map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: -34.397, lng: 150.644},
-            zoom: 8,
+            center: {lat: lat, lng: lng},
+            zoom: 15,
             fullscreenControl: false,
         });
         map.setOptions({draggable: true});
@@ -309,6 +291,8 @@
         const mapCenter = map.getCenter()
         console.log("map center = ", mapCenter.lat(), mapCenter.lng())
         //fill the coords field 
+        $("#id_address_lat").val(mapCenter.lat().toFixed(6))
+        $("#id_address_lng").val(mapCenter.lng().toFixed(6))
     }
 </script>
 {% endblock %}

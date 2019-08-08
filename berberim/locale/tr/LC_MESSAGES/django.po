@@ -156,3 +156,10 @@ msgstr "saat"
 
 msgid "Reserved"
 msgstr "Rezervli"
+
+#:
+msgid "Search in map"
+msgstr "Haritada ara"
+
+msgid "Drag marker into your shops location"
+msgstr "Aşağıdaki işaretçiyi, dükkanınızın haritadaki kesin konumunu gösterecek şekilde ayarlayınız."

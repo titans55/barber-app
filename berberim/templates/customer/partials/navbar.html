@@ -168,6 +168,8 @@
     <nav class="bottom-navbar">
       <div class="container">
           <ul class="nav page-navigation">
+            <li class="nav-item d-hidden"></li>
+
             <li class="nav-item {% if request.resolver_match.url_name == 'landing' %}active{% endif %}">
               <a class="nav-link p-3" href="/">
                 <i class="mdi mdi-file-document-box menu-icon"></i>
@@ -180,12 +182,14 @@
                 <span class="menu-title">{% trans "Barbershop Map" %}</span>
               </a>
             </li>
-            <li class="nav-item {% if request.resolver_match.url_name == 'visited-barbershops' %}active{% endif %}">
+            <li class="nav-item d-hidden"></li>
+
+            <!-- <li class="nav-item {% if request.resolver_match.url_name == 'visited-barbershops' %}active{% endif %}">
               <a class="nav-link p-3" href="/">
                 <i class="mdi mdi-file-document-box menu-icon"></i>
                 <span class="menu-title">Visited Barbershops</span>
               </a>
-            </li>
+            </li> -->
           </ul>
       </div>
     </nav>

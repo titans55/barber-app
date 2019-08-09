@@ -47,20 +47,20 @@
             </div> -->
             <div class="card-body h-100" style="overflow-y:scroll;">
                 <nav>
-                    <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">{% trans "Barbershops Around Me" %}</a>
-                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">{% trans "Visited Barbershops" %}</a>
+                    <div class="nav nav-tabs mb-1" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active mr-1" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">{% trans "Barbershops Around Me" %}</a>
+                        <a class="nav-item nav-link mr-1" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">{% trans "Visited Barbershops" %}</a>
                         <a class="nav-item nav-link" id="nav-favbarbers-tab" data-toggle="tab" href="#nav-favbarbers" role="tab" aria-controls="nav-favbarbers" aria-selected="false">{% trans "Favourite Barbershops" %}</a>
                     </div>
                 </nav>
                 <div class="table-responsive">
-                    <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-content p-0" id="nav-tabContent">
                         <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                             <table class="table table-hover" cellspacing="0">
-                                <thead>
-                                    <tr class="bg-gray-shadow">
+                                <thead  class="bg-gray-shadow">
+                                    <tr>
                                         <th>{% trans "Barbershop" %}</th>
-                                        <th>{% trans "Reviews" %}</th>
+                                        <th>{% trans "Rating" %}</th>
                                         <th>{% trans "Distance" %}</th>
                                         <th>{% trans "Cost" %}</th>
                                     </tr>
@@ -83,13 +83,14 @@
                             <table class="table" cellspacing="0">
                                 <thead>
                                     <tr>
-                                        <th>Project Name</th>
-                                        <th>Employer</th>
-                                        <th>Time</th>
+                                        <th>{% trans "Barbershop" %}</th>
+                                        <th>{% trans "Rated" %}</th>
+                                        <th>{% trans "Distance" %}</th>
+                                        <th>{% trans "Paid" %}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    <!-- <tr>
                                         <td><a href="#">Work 1</a></td>
                                         <td>Doe</td>
                                         <td>john@example.com</td>
@@ -103,7 +104,7 @@
                                         <td><a href="#">Work 3</a></td>
                                         <td>Dooley</td>
                                         <td>july@example.com</td>
-                                    </tr>
+                                    </tr> -->
                                 </tbody>
                             </table>
                         </div>

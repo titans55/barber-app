@@ -1,4 +1,7 @@
 {% load static %}
+{% load sass_tags %}
+{% load i18n %}
+
 <!-- partial:partials/_horizontal-navbar.html -->
 <div class="horizontal-menu">
     <nav class="navbar top-navbar col-lg-12 col-12 p-0">
@@ -168,13 +171,13 @@
             <li class="nav-item {% if request.resolver_match.url_name == 'landing' %}active{% endif %}">
               <a class="nav-link p-3" href="/">
                 <i class="mdi mdi-file-document-box menu-icon"></i>
-                <span class="menu-title">Barbershops Around Me</span>
+                <span class="menu-title">{% trans "Barbershops" %}</span>
               </a>
             </li>
             <li class="nav-item">
               <a class="nav-link p-3 {% if request.resolver_match.url_name == 'user-settings' %}active{% endif %}" href="/barbershop-map">
                 <i class="mdi mdi-map menu-icon"></i>
-                <span class="menu-title">Barbershop Map</span>
+                <span class="menu-title">{% trans "Barbershop Map" %}</span>
               </a>
             </li>
             <li class="nav-item {% if request.resolver_match.url_name == 'visited-barbershops' %}active{% endif %}">

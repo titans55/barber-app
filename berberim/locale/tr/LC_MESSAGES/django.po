@@ -163,3 +163,27 @@ msgstr "Haritada ara"
 
 msgid "Drag marker into your shops location"
 msgstr "Aşağıdaki işaretçiyi, dükkanınızın haritadaki kesin konumunu gösterecek şekilde ayarlayınız."
+
+msgid "Barbershops"
+msgstr "Berberler"
+
+msgid "Barbershop Map"
+msgstr "Berber Haritası"
+
+msgid "Reviews"
+msgstr "Değerlendirmeler"
+
+msgid "Distance"
+msgstr "Uzaklık"
+
+msgid "Cost"
+msgstr "Ücret"
+
+msgid "Barbershops Around Me"
+msgstr "Etrafımdaki Berberler"
+
+msgid "Visited Barbershops"
+msgstr "Gittiğim Berberler"
+
+msgid "Favourite Barbershops"
+msgstr "Favori Berberler"

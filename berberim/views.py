@@ -20,6 +20,8 @@ from django.forms import formset_factory
 from pprint import pprint
 from django.views import View
 
+from django.core import serializers
+
 @login_required
 def landing(request):
     user = request.user
@@ -192,7 +194,10 @@ class user_settings_view(View):
 def map(request):
     user = request.user
 
-    data = {'de': 'de'}
+    barbershops = Barbershop.objects.all()
+    # barbershops = serializers.serialize('json', barbershops)
+
+    data = {'barbershops': barbershops}
 
     return render(request, str(user.user_type) + '/map.html', {'data': data})
 

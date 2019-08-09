@@ -1,5 +1,6 @@
 {% extends "customer/partials/layout.html" %}
 {% load static %}
+{% load l10n %}
 
 {% block headcdn %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
@@ -14,23 +15,30 @@ crossorigin=""/>
 </style>
 <div class="row align-items-center">
     <div class="container">
-            <div id="map" style="height:auto!important; min-height:70vh; border: 1px solid #AAA;"></div>
+        <div id="map" style="height:auto!important; min-height:70vh; border: 1px solid #AAA;"></div>
     </div>
     
 </div>
-
-
+<!-- {{data.barbershops}} -->
+{% for barbershop in data.barbershops %}
+    {{barbershop}}
+{% endfor %}
 
 {% endblock %}
 
 
 {% block footerjs %}
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAU9A4B2NgJQvun4QqrQkBVS0e3a4ZCO4A&callback=geoFindMeAndInitMap" async defer></script>
+<!-- 
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
     integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
-    crossorigin=""></script>
+    crossorigin=""></script> -->
 
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script>
-
+        var map;
+        
         $(function(){
             geoFindMeAndInitMap()
         })
@@ -53,35 +61,45 @@ crossorigin=""/>
                 status.textContent = 'Locating…';
                 navigator.geolocation.getCurrentPosition(success, error);
             }
-
+        
         }
 
+        let barbershopMarkers = []
         function initMap(lat, lng){
-            var map = L.map( 'map', {
-                center: [lat, lng],
-                minZoom: 2,
-                zoom: 13
-            });               
-            L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                subdomains: ['a','b','c']
-            }).addTo( map );
-            var currentLocationIcon = getCurrentLocationIcon()
-            L.marker([lat, lng], {icon: currentLocationIcon}).addTo(map);
 
-        }
+            // let icons = {
+            //     barbershop_icon: {
+            //         icon: {% static 'img/icons/barbershop-icon.png' %}
+            //     },
+            //     current_location_icon: {
+            //         icon: {% static 'img/icons/current-location-icon.png' %}
+            //     }
+            // };
 
-        function getCurrentLocationIcon(){
-            return L.icon({
-                iconUrl: "{%static 'img/map-images/current-location.png' %}",
-
-                iconSize:     [38, 51], // size of the icon
-                iconAnchor:   [17, 51], // point of the icon which will correspond to marker's location
-                popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: lat, lng: lng},
+                zoom: 15,
+                fullscreenControl: false,
             });
             
+            let origin = $(location).attr("origin")
+            // Create markers.
+            {% for barbershop in data.barbershops %}
+            
+            var myLatLng = {lat: {{barbershop.address.lat|unlocalize}}, lng:{{barbershop.address.lng|unlocalize}}};
+            var marker = new google.maps.Marker({
+                position: myLatLng,
+                map: map,
+                icon: {
+                    url: '{% static "img/icons/barbershop-icon.png" %}',
+                    scaledSize: new google.maps.Size(48, 48)
+                },
+                title: 'Hello World!'
+            });
+            {% endfor %}
 
         }
+
+
     </script>
 {% endblock %}

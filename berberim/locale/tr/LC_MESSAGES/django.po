@@ -170,7 +170,7 @@ msgstr "Berberler"
 msgid "Barbershop Map"
 msgstr "Berber Haritası"
 
-msgid "Reviews"
+msgid "Rating"
 msgstr "Değerlendirmeler"
 
 msgid "Distance"

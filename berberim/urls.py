@@ -4,6 +4,7 @@ from . import views, auth
 
 urlpatterns = [
     path('', views.landing.as_view(), name='landing'),
+    path('<province>/<city>-berberler', views.landing.as_view(), name='landing2'),
     path('login', auth.login_view, name='login'),
 
     #customer

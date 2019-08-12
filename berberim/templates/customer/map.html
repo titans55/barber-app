@@ -52,11 +52,11 @@ crossorigin=""/>
             }
 
             function error() {
-                status.textContent = 'Unable to retrieve your location';
+                alert('Unable to retrieve your location')
             }
 
             if (!navigator.geolocation) {
-                status.textContent = 'Geolocation is not supported by your browser';
+                alert('Geolocation is not supported by your browser')
             } else {
                 status.textContent = 'Locating…';
                 navigator.geolocation.getCurrentPosition(success, error);
@@ -67,21 +67,18 @@ crossorigin=""/>
         let barbershopMarkers = []
         function initMap(lat, lng){
 
-            // let icons = {
-            //     barbershop_icon: {
-            //         icon: {% static 'img/icons/barbershop-icon.png' %}
-            //     },
-            //     current_location_icon: {
-            //         icon: {% static 'img/icons/current-location-icon.png' %}
-            //     }
-            // };
-
             map = new google.maps.Map(document.getElementById('map'), {
                 center: {lat: lat, lng: lng},
                 zoom: 15,
                 fullscreenControl: false,
             });
             
+            var currentLocationMarker = new google.maps.Marker({
+                position: {lat: lat, lng: lng},
+                map: map,
+                icon: 'http://www.robotwoods.com/dev/misc/bluecircle.png'
+            });
+
             let origin = $(location).attr("origin")
             // Create markers.
             {% for barbershop in data.barbershops %}

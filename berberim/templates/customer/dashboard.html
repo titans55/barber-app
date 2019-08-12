@@ -15,10 +15,10 @@
     .clickable-tr:hover{
         box-shadow: 0 14px 28px rgba(211, 211, 211, 0.25), 0 10px 10px rgba(0,0,0,0.22);
     }
-    .bg-gray-shadow{
+    /* .bg-gray-shadow{
         box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
         transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-    }
+    } */
 </style>
 {% endblock %}
 
@@ -48,8 +48,8 @@
             <div class="card-body h-100" style="overflow-y:scroll;">
                 <nav>
                     <div class="nav nav-tabs mb-1" id="nav-tab" role="tablist">
-                        <a class="nav-item nav-link active mr-1" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">{% trans "Barbershops Around Me" %}</a>
-                        <a class="nav-item nav-link mr-1" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">{% trans "Visited Barbershops" %}</a>
+                        <a class="nav-item nav-link active mr-2" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">{% trans "Barbershops Around Me" %}</a>
+                        <a class="nav-item nav-link mr-2" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">{% trans "Visited Barbershops" %}</a>
                         <a class="nav-item nav-link" id="nav-favbarbers-tab" data-toggle="tab" href="#nav-favbarbers" role="tab" aria-controls="nav-favbarbers" aria-selected="false">{% trans "Favourite Barbershops" %}</a>
                     </div>
                 </nav>
@@ -57,7 +57,7 @@
                     <div class="tab-content p-0" id="nav-tabContent">
                         <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                             <table class="table table-hover" cellspacing="0">
-                                <thead  class="bg-gray-shadow">
+                                <thead>
                                     <tr>
                                         <th>{% trans "Barbershop" %}</th>
                                         <th>{% trans "Rating" %}</th>

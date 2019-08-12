@@ -6,7 +6,9 @@ from django.shortcuts import redirect, HttpResponse
 
 from .models import UserType, Barbershop, BarbershopSchedule
 
+from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 from django.utils.translation import gettext as _
@@ -21,34 +23,47 @@ from pprint import pprint
 from django.views import View
 
 from django.core import serializers
-
-@login_required
-def landing(request):
-    user = request.user
-    # TODO filter barbershops by distance
-
-    if 'barber' == str(user.user_type):
-        try:
-            barbershop = Barbershop.objects.get(owner=user)
-            data = {
-                'barbershop': barbershop
-            }
-        except Barbershop.DoesNotExist:
-            return redirect('user-settings')
+import requests
 
 
-    elif 'customer' == str(user.user_type):
-        barbershops = Barbershop.objects.all()
-        data = {'barbershops': barbershops}
+class landing(View):
 
-    
-    return render(request, str(user.user_type) + '/dashboard.html',
-                  {'data': data, 'user': user})
+    def get(self, request):
+        user = request.user
+        # TODO filter barbershops by distance
+        if user.is_anonymous:
+            barbershops = Barbershop.objects.all()
+            data = {'barbershops': barbershops}
+            return render(request, 'customer' + '/dashboard.html',
+                        {'data': data, 'user': user})
+
+        else: 
+            self._get_current_coordinates()
+            if 'barber' == str(user.user_type):
+                try:
+                    barbershop = Barbershop.objects.get(owner=user)
+                    data = {
+                        'barbershop': barbershop
+                    }
+                except Barbershop.DoesNotExist:
+                    return redirect('user-settings')
+
+
+            elif 'customer' == str(user.user_type):
+                barbershops = Barbershop.objects.all()
+                data = {'barbershops': barbershops}
+                
+            
+            return render(request, str(user.user_type) + '/dashboard.html',
+                        {'data': data, 'user': user})
+
+    def _get_current_coordinates(self):
+        pass
 
 
 class user_settings_view(View):
-    login_required = True
 
+    @method_decorator(login_required)
     def get(self, request):
         user = request.user
 
@@ -73,6 +88,7 @@ class user_settings_view(View):
         else:
             pass
 
+    @method_decorator(login_required)
     def post(self, request):
         user = request.user
 
@@ -202,8 +218,8 @@ def map(request):
     return render(request, str(user.user_type) + '/map.html', {'data': data})
 
 class barbershop_view(View):
-    login_required = True
 
+    @method_decorator(login_required)
     def get(self, request, barbershop_slug):
         user = request.user
 
@@ -230,6 +246,7 @@ class barbershop_view(View):
         print(data)
         return render(request, str(user.user_type) + '/barbershop.html', data)
 
+    @method_decorator(login_required)
     def post(self, request, barbershop_slug=None):
         user = request.user
 

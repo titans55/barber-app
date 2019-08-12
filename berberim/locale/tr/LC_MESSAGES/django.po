@@ -187,3 +187,6 @@ msgstr "Gittiğim Berberler"
 
 msgid "Favourite Barbershops"
 msgstr "Favori Berberler"
+
+msgid "Register"
+msgstr "Kaydol"

@@ -190,3 +190,6 @@ msgstr "Favori Berberler"
 
 msgid "Register"
 msgstr "Kaydol"
+
+msgid "Settings"
+msgstr "Ayarlar"

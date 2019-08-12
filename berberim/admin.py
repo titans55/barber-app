@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django import forms
-from .models import UserType, User, Barbershop, Address, BarbershopServices, BarbershopSchedule, BarbershopEmployee
+from .models import UserType, User, Barbershop, Address, BarbershopServices, BarbershopSchedule, BarbershopEmployee, \
+    Country, Province, District
 
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm
@@ -74,6 +75,50 @@ class AddressAdmin(admin.ModelAdmin):
     readonly_fields = ['id']
 
 admin.site.register(Address, AddressAdmin)
+
+
+class CountryAdminForm(forms.ModelForm):
+
+    class Meta:
+        model = Country
+        fields = '__all__'
+
+
+class CountryAdmin(admin.ModelAdmin):
+    form = CountryAdminForm
+    list_display = ['country_code', 'country_name']
+
+admin.site.register(Country, CountryAdmin)
+
+
+class ProvinceAdminForm(forms.ModelForm):
+
+    class Meta:
+        model = Province
+        fields = '__all__'
+
+
+class ProvinceAdmin(admin.ModelAdmin):
+    form = ProvinceAdminForm
+    list_display = ['province_name']
+    readonly_fields = ['province_name']
+
+admin.site.register(Province, ProvinceAdmin)
+
+
+class DistrictAdminForm(forms.ModelForm):
+
+    class Meta:
+        model = District
+        fields = '__all__'
+
+
+class DistrictAdmin(admin.ModelAdmin):
+    form = DistrictAdminForm
+    list_display = ['district_name']
+    readonly_fields = ['district_name']
+
+admin.site.register(District, DistrictAdmin)
 
 class BarbershopServicesAdminForm(forms.ModelForm):
 

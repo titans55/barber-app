@@ -49,8 +49,10 @@
                 <nav>
                     <div class="nav nav-tabs mb-1" id="nav-tab" role="tablist">
                         <a class="nav-item nav-link active mr-2" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">{% trans "Barbershops Around Me" %}</a>
+                        {% if not user.is_anonymous %}
                         <a class="nav-item nav-link mr-2" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">{% trans "Visited Barbershops" %}</a>
                         <a class="nav-item nav-link" id="nav-favbarbers-tab" data-toggle="tab" href="#nav-favbarbers" role="tab" aria-controls="nav-favbarbers" aria-selected="false">{% trans "Favourite Barbershops" %}</a>
+                        {% endif %}
                     </div>
                 </nav>
                 <div class="table-responsive">
@@ -79,6 +81,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        {% if not user.is_anonymous %}
                         <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                             <table class="table" cellspacing="0">
                                 <thead>
@@ -108,6 +111,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
                 
@@ -126,6 +130,39 @@
         window.location = $(this).attr("data-href")
     })
 </script>
+{% if user.is_anonymous %}
+<script src="https://maps.googleapis.com/maps/api/js?key=***REMOVED***&callback=geoFindMeAndInitMap" async defer></script>
+
+<script>
+    $(function(){
+
+    })
+    function geoFindMeAndInitMap() {
+
+        function success(position) {
+            const latitude  = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            // initMap(latitude, longitude )
+            
+        }
+
+        function error() {
+            alert('Unable to retrieve your location')
+        }
+
+        if (!navigator.geolocation) {
+            alert('Geolocation is not supported by your browser')
+        } else {
+            status.textContent = 'Locating…';
+            navigator.geolocation.getCurrentPosition(success, error);
+        }
+
+    }
+    function reverseGeocode(){
+        
+    }
+</script>
+{% endif %}
 
 <!-- <script type="text/javascript" src="{% static 'wololo/js/villageResources.js' %}"></script> -->
 

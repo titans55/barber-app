@@ -28,14 +28,23 @@ import requests
 
 class landing(View):
 
-    def get(self, request):
+    def get(self, request, **kwargs):
         user = request.user
         # TODO filter barbershops by distance
+        province = kwargs.get('province', None)
+        city = kwargs.get('city', None)
+        
         if user.is_anonymous:
-            barbershops = Barbershop.objects.all()
-            data = {'barbershops': barbershops}
-            return render(request, 'customer' + '/dashboard.html',
-                        {'data': data, 'user': user})
+            if province and city:
+                barbershops = Barbershop.objects.all()
+                data = {'barbershops': barbershops}
+                return render(request, 'customer' + '/dashboard.html',
+                            {'data': data, 'user': user})
+            else: 
+                barbershops = Barbershop.objects.all()
+                data = {'barbershops': barbershops}
+                return render(request, 'customer' + '/dashboard.html',
+                            {'data': data, 'user': user})
 
         else: 
             self._get_current_coordinates()

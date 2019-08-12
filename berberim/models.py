@@ -223,6 +223,8 @@ class Address(models.Model):
 
     # Fields
     id = models.AutoField(primary_key=True)
+    # province = models.CharField(max_length=30, choices=TR_PROVINCES)
+    # city = models.CharField(max_length=30, choices=TR_CITIES)
     description = models.CharField(max_length=255)
     lng = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
@@ -245,6 +247,79 @@ class Address(models.Model):
 
     def get_update_url(self):
         return reverse('berberim_addresses_update', args=(self.pk,))
+
+
+class Country(models.Model):
+
+    # Fields
+    country_code = models.CharField(primary_key=True, max_length=3)
+    country_name = models.CharField(max_length=30)
+
+
+    class Meta:
+        ordering = ('-pk',)
+
+    def __unicode__(self):
+        return u'%s' % self.pk
+
+    def get_absolute_url(self):
+        return reverse('berberim_country_detail', args=(self.pk,))
+
+
+    def get_update_url(self):
+        return reverse('berberim_country_update', args=(self.pk,))
+
+
+class Province(models.Model):
+
+    # Fields
+    province_code = models.CharField(primary_key=True, max_length=20) #convention is "<country_code>_<province_code>" example "TR_01" or "USA_AL"
+    province_name = models.TextField(max_length=100)
+
+    # Relationship Fields
+    country = models.ForeignKey(
+        'berberim.Country',
+        on_delete=models.CASCADE, related_name="provinces", 
+    )
+
+    class Meta:
+        ordering = ('-pk',)
+
+    def __unicode__(self):
+        return u'%s' % self.pk
+
+    def get_absolute_url(self):
+        return reverse('berberim_province_detail', args=(self.pk,))
+
+
+    def get_update_url(self):
+        return reverse('berberim_province_update', args=(self.pk,))
+
+
+class District(models.Model):
+
+    # Fields
+    district_code = models.CharField(primary_key=True, max_length=20) #convention is "<country_code>_<province_code>_<district_code>" example "TR_01_1" 
+    district_name = models.TextField(max_length=100)
+
+    # Relationship Fields
+    province = models.ForeignKey(
+        'berberim.Province',
+        on_delete=models.CASCADE, related_name="districts", 
+    )
+
+    class Meta:
+        ordering = ('-pk',)
+
+    def __unicode__(self):
+        return u'%s' % self.pk
+
+    def get_absolute_url(self):
+        return reverse('berberim_district_detail', args=(self.pk,))
+
+
+    def get_update_url(self):
+        return reverse('berberim_district_update', args=(self.pk,))
 
 
 class BarbershopSchedule(models.Model):

@@ -3,7 +3,7 @@ from berberproje import settings
 from . import views, auth
 
 urlpatterns = [
-    path('', views.landing, name='landing'),
+    path('', views.landing.as_view(), name='landing'),
     path('login', auth.login_view, name='login'),
 
     #customer

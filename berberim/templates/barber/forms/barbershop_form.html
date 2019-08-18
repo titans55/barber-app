@@ -2,14 +2,24 @@
 {% load sass_tags %}
 {% load i18n %}
 
-{% for field in barbershop_form %}
 <div class="form-group">
-    {% if not field.is_hidden %}
-        <label>{{ field.label }}</label>
-    {% endif %}
-    {{ field }}
+    {{barbershop_form.barbershop_id}}
+    {{barbershop_form.barbershop_name.label}}
+    {{barbershop_form.barbershop_name}}
+    {{barbershop_form.address_lat}}
+    {{barbershop_form.address_lng}}
 </div>
-{% endfor %}
+<div class="form-group">
+{{barbershop_form.address_description.label}}
+    <div class="form-inline form-row">
+        {{barbershop_form.address_country}}
+        {{barbershop_form.address_province}}
+        {{barbershop_form.address_district}}
+    </div>
+</div>
+<div class="form-group">
+    {{barbershop_form.address_description}}
+</div>
 {{barbershop_form.errors}}
 
 <div class="form-group">

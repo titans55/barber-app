@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponseNotFound
 from django.shortcuts import redirect, HttpResponse
 
-from .models import UserType, Barbershop, BarbershopSchedule
+from .models import UserType, Barbershop, BarbershopSchedule, Province, District
 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -23,7 +23,6 @@ from pprint import pprint
 from django.views import View
 
 from django.core import serializers
-import requests
 
 
 class landing(View):
@@ -157,6 +156,9 @@ class user_settings_view(View):
         return {
             'barbershop_id': barbershop.id,
             'barbershop_name': barbershop.name,
+            'address_country': barbershop.address.country.country_code,
+            'address_province': barbershop.address.province.province_code,
+            'address_district': barbershop.address.district.district_code,
             'address_description': barbershop.address.description,
             'address_lat': barbershop.address.lat,
             'address_lng': barbershop.address.lng,
@@ -213,6 +215,14 @@ class user_settings_view(View):
         
         return form, employee_formset, barbershop_services_formset, extra
     
+def load_districts_ajax(request):
+    if request.method == "POST":
+        province_code = request.POST.get("province_code")
+        province = Province.objects.get(province_code=province_code)
+        districts = District.objects.filter(province=province)
+        districts = serializers.serialize("json", districts)
+        
+        return HttpResponse(districts, content_type='application/json')
     
 
 @login_required

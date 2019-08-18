@@ -71,7 +71,7 @@ class AddressAdminForm(forms.ModelForm):
 
 class AddressAdmin(admin.ModelAdmin):
     form = AddressAdminForm
-    list_display = ['id', 'description', 'lat', 'lng']
+    list_display = ['id', 'description', 'country', 'province', 'district', 'lat', 'lng']
     readonly_fields = ['id']
 
 admin.site.register(Address, AddressAdmin)

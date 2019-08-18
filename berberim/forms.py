@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User, UserType, Barbershop, BarbershopEmployee, EMPLOYEE_TITLES_CHOICES,\
-    SERVICE_NAME_CHOICES, Address, BarbershopServices
+    SERVICE_NAME_CHOICES, Address, BarbershopServices, Country, Province, District
 from django.utils.translation import gettext as _
 import re
 from django.core.validators import RegexValidator
@@ -74,12 +74,44 @@ class BarberUserSettingsForm(forms.Form):
         ),
         label=_('What is the name of the shop?')
     )
+    address_country = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={
+                'class':'init-select2 ml-1',
+                'style':'width:32%;'
+            }
+        ),
+        choices=[(c.country_code, c.country_name) for c in Country.objects.all()],
+        initial=Country.objects.get(country_code="TR"),
+        label=""
+    )
+    address_province = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={
+                'class':'init-select2',
+                'style':'width:32%;'
+
+            }
+        ),
+        choices=[(p.province_code, p.province_name) for p in Province.objects.all().order_by('province_code')],
+        label=""
+    )
+    address_district = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={
+                'class':'init-select2',
+                'style':'width:32%;'
+            }
+        ),
+        choices=[(d.district_code, d.district_name) for d in District.objects.order_by('district_code')],
+        label=""
+    )
     address_description = forms.CharField(
         max_length=150,
         widget= forms.Textarea(
             attrs={
                 'class':'form-control',
-                'placeholder':'Serdivan/Sakarya',
+                'placeholder':'Mahalle/Cadde/Sokak, Bina/Daire No.',
                 'rows':5
             }
         ),
@@ -108,6 +140,9 @@ class BarberUserSettingsForm(forms.Form):
             barbershop.name = self.cleaned_data['barbershop_name']
             barbershop.save()
 
+            barbershop.address.country = Country.objects.get(country_code=self.cleaned_data['address_country'])
+            barbershop.address.province = Province.objects.get(province_code=self.cleaned_data['address_province'])
+            barbershop.address.district = District.objects.get(district_code=self.cleaned_data['address_district'])
             barbershop.address.description = self.cleaned_data['address_description']
             barbershop.address.lat = self.cleaned_data['address_lat']
             barbershop.address.lng = self.cleaned_data['address_lng']
@@ -129,6 +164,9 @@ class BarberUserSettingsForm(forms.Form):
                 )
 
             address = Address.objects.create(
+                country = Country.objects.get(country_code=self.cleaned_data['address_country']),
+                province = Province.objects.get(province_code=self.cleaned_data['address_province']),
+                district = District.objects.get(district_code=self.cleaned_data['address_district']),
                 description=self.cleaned_data['address_description'],
                 lat=self.cleaned_data['address_lat'],
                 lng=self.cleaned_data['address_lng'],

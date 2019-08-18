@@ -234,6 +234,18 @@ class Address(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE, related_name="addressess", 
     )
+    country = models.ForeignKey(
+        'berberim.Country',
+        on_delete=models.CASCADE, related_name="addresss", 
+    )
+    province = models.ForeignKey(
+        'berberim.Province',
+        on_delete=models.CASCADE, related_name="addresss", 
+    )
+    district = models.ForeignKey(
+        'berberim.District',
+        on_delete=models.CASCADE, related_name="addresss", 
+    )
 
     class Meta:
         ordering = ('-pk',)
@@ -258,6 +270,9 @@ class Country(models.Model):
 
     class Meta:
         ordering = ('-pk',)
+
+    def __str__(self):
+        return self.country_name
 
     def __unicode__(self):
         return u'%s' % self.pk
@@ -285,6 +300,9 @@ class Province(models.Model):
     class Meta:
         ordering = ('-pk',)
 
+    def __str__(self):
+        return self.province_name
+
     def __unicode__(self):
         return u'%s' % self.pk
 
@@ -310,6 +328,9 @@ class District(models.Model):
 
     class Meta:
         ordering = ('-pk',)
+
+    def __str__(self):
+        return self.district_name
 
     def __unicode__(self):
         return u'%s' % self.pk

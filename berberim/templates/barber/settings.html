@@ -73,13 +73,13 @@
                         {% include "barber/forms/barbershop_form.html" with barbershop_form=barbershop_form %}
                     </div>
                 {% else %} 
-                    <div class="col-md-6 grid-margin stretch-card border" style="height:90vh;">
+                    <div class="col-md-6 grid-margin stretch-card" style="height:90vh;">
                         <div class="card-body text-center">
                             <h4 class="card-title">{% trans "Barbershop Settings" %}</h4>
                             {% include "barber/forms/barbershop_form.html" with barbershop_form=barbershop_form %}
                         </div>
                     </div>
-                    <div class="col-md-6 grid-margin stretch-card border" style="height:90vh;">
+                    <div class="col-md-6 grid-margin stretch-card" style="height:90vh;">
     
                         <div class="card-body text-center">
                             {% if employee_formset %}
@@ -192,6 +192,9 @@
             deleteForm('employees', $(this));
             return false;
         });
+
+        initProvinceChange()        
+
     })
 
 
@@ -293,6 +296,35 @@
         //fill the coords field 
         $("#id_address_lat").val(mapCenter.lat().toFixed(6))
         $("#id_address_lng").val(mapCenter.lng().toFixed(6))
+    }
+
+    function initProvinceChange(){
+        let provinces = $("#id_address_province").find("option")
+        let districts = $("#id_address_district").find("option")
+        // console.log(provinces)
+        let selected_province = $("#id_address_province").val()
+        let selected_district = $("#id_address_district").val()
+        let provinceDistrictJson = {}
+        for(let i=0; i<provinces.length; i++){
+            // console.log(provinces[i].value)
+            provinceDistrictJson[provinces[i].value] = $("#id_address_district").find("option[value^="+provinces[i].value+"]")
+        }
+        $("#id_address_district").empty()
+        for(let i=0; i<provinceDistrictJson[selected_province].length; i++){
+            let newOption = new Option(provinceDistrictJson[selected_province][i].text, provinceDistrictJson[selected_province][i].value, false, false);
+            $("#id_address_district").append(newOption)
+        }
+        $("#id_address_district").val(selected_district)
+        
+        $("#id_address_province").on("change", function(){
+            let provinceCode = $(this).val()
+            $("#id_address_district").empty()
+            for(let i=0; i<provinceDistrictJson[provinceCode].length; i++){
+                console.log(provinceDistrictJson[provinceCode][i])
+                let newOption = new Option(provinceDistrictJson[provinceCode][i].text, provinceDistrictJson[provinceCode][i].value, false, false);
+                $("#id_address_district").append(newOption)
+            }
+        })
     }
 </script>
 {% endblock %}

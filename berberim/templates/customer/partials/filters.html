@@ -1,0 +1,39 @@
+{% load static %}
+{% load sass_tags %}
+{% load i18n %}
+
+
+<div class="container mt-5 {% if filters.filtered is False %} display-5 pt-5{% endif %}">
+    <div class="row mb-2 justify-content-center text-center mb-3">
+        <select name="address_province" class="init-select2 w-25 address-filter" id="id_address_province">
+            {% for province in filters.provinces %}
+                <option value="{{province.province_code}}"
+                {% if filters.default_filtered_address.province_code == province.province_code %} selected="selected" {% endif %}>
+                    {{province.province_name}}
+                </option>
+            {% endfor %}      
+        </select>
+        
+        <select name="address_district" class="init-select2 w-25 address-filter" id="id_address_district">
+            {% for district in filters.districts %}
+                <option value="{{district.district_code}}"
+                {% if filters.default_filtered_address.district_code == district.district_code %} selected="selected" {% endif %}
+                    >{{district.district_name}}
+                </option>
+            {% endfor %}  
+        </select>
+    
+    </div>
+    <div class="row mb-2 justify-content-center mb-3">
+        {% trans "Please select province and district that you are located." %}
+    </div>
+    <div class="row mb-2 justify-content-center">
+        <form action="{% url 'selectProvinceDistrict' %}" method="post">
+            {% csrf_token %}
+            <input id="provinceInput" type="hidden" name="province_code" value="" />
+            <input id="districtInput" type="hidden" name="district_code" value="" />
+            <button type="submit" class="btn btn-primary">{% trans "Apply" %}</button>
+        </form>
+    </div>
+
+</div>

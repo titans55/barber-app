@@ -193,3 +193,9 @@ msgstr "Kaydol"
 
 msgid "Settings"
 msgstr "Ayarlar"
+
+msgid "Please select province and district that you are located."
+msgstr "Lütfen bulunduğunuz il ve ilçeyi(semti) seçiniz."
+
+msgid "Apply"
+msgstr "Uygula"

@@ -29,19 +29,39 @@ class landing(View):
 
     def get(self, request, **kwargs):
         user = request.user
-        # TODO filter barbershops by distance
         province = kwargs.get('province', None)
-        city = kwargs.get('city', None)
-        
+        district = kwargs.get('district', None)
+        default_filtered_address = request.session.get('default_filtered_address')
+
         if user.is_anonymous:
-            if province and city:
+            if province and district:
                 barbershops = Barbershop.objects.all()
-                data = {'barbershops': barbershops}
+                data = {
+                    'barbershops': barbershops,
+                    'filters': {
+                        'filtered': True,
+                        'provinces': Province.objects.all().order_by('province_code'),
+                        'districts': District.objects.order_by('district_code'),
+                        'default_filtered_address': default_filtered_address
+                    }
+                }
                 return render(request, 'customer' + '/dashboard.html',
                             {'data': data, 'user': user})
             else: 
+                if default_filtered_address:
+                    province_name = Province.objects.get(province_code=default_filtered_address['province_code']).province_name.lower()
+                    district_name = District.objects.get(district_code=default_filtered_address['district_code']).district_name.lower()
+                    return redirect('landing-with-province-n-district', province=province_name, district=district_name)
                 barbershops = Barbershop.objects.all()
-                data = {'barbershops': barbershops}
+                data = {
+                    'barbershops': barbershops,
+                    'filters': {
+                        'filtered': False,
+                        'provinces': Province.objects.all().order_by('province_code'),
+                        'districts': District.objects.order_by('district_code'),
+                        'default_filtered_address': default_filtered_address
+                    }
+                }
                 return render(request, 'customer' + '/dashboard.html',
                             {'data': data, 'user': user})
 
@@ -68,6 +88,19 @@ class landing(View):
     def _get_current_coordinates(self):
         pass
 
+
+def select_province_district(request):
+    province_code = request.POST['province_code']
+    district_code = request.POST['district_code']
+
+    province_name = Province.objects.get(province_code=province_code).province_name.lower()
+    district_name = District.objects.get(district_code=district_code).district_name.lower()
+
+    request.session['default_filtered_address'] = {
+        "province_code": province_code,
+        "district_code": district_code
+    }
+    return redirect('landing-with-province-n-district', province=province_name, district=district_name)  # 4
 
 class user_settings_view(View):
 

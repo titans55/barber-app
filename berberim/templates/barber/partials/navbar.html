@@ -1,4 +1,6 @@
 {% load static %}
+{% load sass_tags %}
+{% load i18n %}
 <!-- partial:partials/_horizontal-navbar.html -->
 <div class="horizontal-menu">
     <nav class="navbar top-navbar col-lg-12 col-12 p-0">
@@ -140,7 +142,7 @@
                 </div>
               </li>
               <li class="nav-item dropdown d-lg-flex d-none">
-                <a type="button" class="btn btn-inverse-primary btn-sm" href="/user-settings">Settings</a>
+                <a type="button" class="btn btn-inverse-primary btn-sm" href="/user-settings">{% trans "Settings" %}</a>
               </li>
               <li class="nav-item nav-profile dropdown">
                 <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">

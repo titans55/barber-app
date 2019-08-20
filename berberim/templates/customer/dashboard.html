@@ -25,17 +25,18 @@
 {% block content %}
 
 <div class="row" style="height:75vh">
-    <div class="col-3 h-100">
+    {% if data.filters.filtered %}
+    <div class="col-3 h-100  p-0" id="mySidebar">
         <div class="card h-100">
             <div class="card-body h-100">
-                <div class="row">
-                    FILTERs
-                </div>
+                {% include "customer/partials/filters.html" with filters=data.filters %}
             </div>
         </div>
     </div>
-    <div class="col-9 h-100">
+    <div id="content" class="col-9 h-100">
         <div class="card h-100">
+            <button class="openbtn" filter="opened">☰ Toggle Sidebar</button> 
+
             <!-- <div class="card-body">
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
@@ -118,6 +119,15 @@
             </div>
         </div>
     </div>
+    {% elif data.filters.filtered is False %}
+    <div class="col-12 h-100  p-0" id="mySidebar">
+        <div class="card h-100">
+            <div class="card-body h-100">
+                {% include "customer/partials/filters.html" with filters=data.filters %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
     
 </div>
 
@@ -135,7 +145,10 @@
 
 <script>
     $(function(){
-
+        $('.init-select2').select2();
+        initProvinceChange()        
+        initFilterOpenClose()
+        initSelectProvinceDistrictForm()
     })
     function geoFindMeAndInitMap() {
 
@@ -160,6 +173,29 @@
     }
     function reverseGeocode(){
         
+    }
+
+    function initFilterOpenClose(){
+        $(".openbtn").on("click", function(){
+            if($(this).attr("filter")=="opened"){
+                // alert("wololo")
+                $("#mySidebar").addClass("d-none")
+                $("#content").removeClass("col-9").addClass("col-12")
+                $(this).attr("filter","closed")
+            }else{
+                $("#mySidebar").removeClass("d-none")
+                $("#content").removeClass("col-12").addClass("col-9")
+                $(this).attr("filter","opened")
+            }
+
+        })
+    }
+
+    function initSelectProvinceDistrictForm(){
+        $(".address-filter").on("change", function(){
+           let addressType = $(this).attr("id").split("_")[2]
+           $("#"+addressType+"Input").val($(this).val())
+        })
     }
 </script>
 {% endif %}

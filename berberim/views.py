@@ -27,24 +27,30 @@ from django.core import serializers
 
 class landing(View):
 
+    def _get_initial_data(self, is_filtered, default_filtered_address):
+        barbershops = Barbershop.objects.all()
+        data = {
+            'barbershops': barbershops,
+            'filters': {
+                'filtered': is_filtered,
+                'provinces': Province.objects.all().order_by('province_code'),
+                'districts': District.objects.order_by('district_code'),
+                'default_filtered_address': default_filtered_address
+            }
+        }
+        return data
+
     def get(self, request, **kwargs):
         user = request.user
         province = kwargs.get('province', None)
         district = kwargs.get('district', None)
         default_filtered_address = request.session.get('default_filtered_address')
+        print("wololo", user, user.user_type)
 
         if user.is_anonymous:
             if province and district:
-                barbershops = Barbershop.objects.all()
-                data = {
-                    'barbershops': barbershops,
-                    'filters': {
-                        'filtered': True,
-                        'provinces': Province.objects.all().order_by('province_code'),
-                        'districts': District.objects.order_by('district_code'),
-                        'default_filtered_address': default_filtered_address
-                    }
-                }
+                data = self._get_initial_data(True, default_filtered_address)
+
                 return render(request, 'customer' + '/dashboard.html',
                             {'data': data, 'user': user})
             else: 
@@ -52,34 +58,36 @@ class landing(View):
                     province_name = Province.objects.get(province_code=default_filtered_address['province_code']).province_name.lower()
                     district_name = District.objects.get(district_code=default_filtered_address['district_code']).district_name.lower()
                     return redirect('landing-with-province-n-district', province=province_name, district=district_name)
-                barbershops = Barbershop.objects.all()
-                data = {
-                    'barbershops': barbershops,
-                    'filters': {
-                        'filtered': False,
-                        'provinces': Province.objects.all().order_by('province_code'),
-                        'districts': District.objects.order_by('district_code'),
-                        'default_filtered_address': default_filtered_address
-                    }
-                }
+                
+                data = self._get_initial_data(False, default_filtered_address)
                 return render(request, 'customer' + '/dashboard.html',
                             {'data': data, 'user': user})
 
         else: 
-            self._get_current_coordinates()
             if 'barber' == str(user.user_type):
+                print("wololo")
                 try:
                     barbershop = Barbershop.objects.get(owner=user)
                     data = {
-                        'barbershop': barbershop
+                        'barbershop': barbershop,
                     }
                 except Barbershop.DoesNotExist:
                     return redirect('user-settings')
 
 
             elif 'customer' == str(user.user_type):
-                barbershops = Barbershop.objects.all()
-                data = {'barbershops': barbershops}
+                if province and district:
+                    data = self._get_initial_data(True, default_filtered_address)
+                else:
+                    print("aha")
+                    if default_filtered_address:
+                        province_name = Province.objects.get(province_code=default_filtered_address['province_code']).province_name.lower()
+                        district_name = District.objects.get(district_code=default_filtered_address['district_code']).district_name.lower()
+                        return redirect('landing-with-province-n-district', province=province_name, district=district_name)
+                    
+                    data = self._get_initial_data(False, default_filtered_address)
+                    print("yess")
+                    print(user.user_type)
                 
             
             return render(request, str(user.user_type) + '/dashboard.html',

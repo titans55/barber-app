@@ -125,7 +125,10 @@
           <ul class="navbar-nav navbar-nav-right">
               {% if user.is_anonymous %}
               <li class="nav-item dropdown d-lg-flex d-none">
-                <a type="button" class="btn btn-inverse-primary btn-sm mr-3" href="/register">{% trans "Register" %}</a>
+                <a type="button" class="btn btn-inverse-primary btn-sm" href="{% url 'login' %}">{% trans "Login" %}</a>
+              </li>
+              <li class="nav-item dropdown d-lg-flex d-none">
+                <a type="button" class="btn btn-inverse-primary btn-sm mr-3" href="{% url 'register' %}">{% trans "Register" %}</a>
               </li>
               {% else %}
               <li class="nav-item dropdown  d-lg-flex d-none">

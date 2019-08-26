@@ -28,7 +28,10 @@ from django.core import serializers
 class landing(View):
 
     def _get_initial_data(self, is_filtered, default_filtered_address):
-        barbershops = Barbershop.objects.all()
+        province_code = default_filtered_address['province_code']
+        district_code = default_filtered_address['district_code']
+        barbershops = Barbershop.objects.filter(address__province__province_code=province_code, address__district__district_code=district_code)
+        Province.objects.get(province_code=default_filtered_address['province_code'])
         data = {
             'barbershops': barbershops,
             'filters': {

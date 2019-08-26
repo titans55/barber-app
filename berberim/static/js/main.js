@@ -13,7 +13,9 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-
+$(function(){
+    console.log("main.js imported")
+})
 function initProvinceChange(){
     let provinces = $("#id_address_province").find("option")
     let districts = $("#id_address_district").find("option")

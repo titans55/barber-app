@@ -5,6 +5,7 @@ from .models import User, UserType, Barbershop, BarbershopEmployee, EMPLOYEE_TIT
 from django.utils.translation import gettext as _
 import re
 from django.core.validators import RegexValidator
+from django.contrib.auth import authenticate
 
 
 alphanumeric = RegexValidator(r'^[0-9a-zA-Z]*$', 'Only alphanumeric characters are allowed.') 
@@ -48,7 +49,7 @@ class RegisterForm(UserCreationForm):
         return cleaned_data
         
 
-class UserForm(forms.ModelForm):
+class LoginForm(forms.ModelForm):
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={'class': 'form-control form-control-lg border-left-0'})
     )
@@ -58,6 +59,20 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['email', 'password']
+
+    def clean(self):
+        email = self.cleaned_data.get('email')
+        password = self.cleaned_data.get('password')
+        user = authenticate(username=email, password=password)
+        if not user: #TODO or not user.is_active
+            raise forms.ValidationError("Sorry, that login was invalid. Please try again.")
+        return self.cleaned_data
+
+    def login(self, request):
+        username = self.cleaned_data.get('email')
+        password = self.cleaned_data.get('password')
+        user = authenticate(username=username, password=password)
+        return user
 
 class BarberUserSettingsForm(forms.Form):
     barbershop_id = forms.IntegerField(

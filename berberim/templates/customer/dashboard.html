@@ -140,8 +140,7 @@
         window.location = $(this).attr("data-href")
     })
 </script>
-{% if user.is_anonymous %}
-<script src="https://maps.googleapis.com/maps/api/js?key=***REMOVED***&callback=geoFindMeAndInitMap" async defer></script>
+<!-- <script src="https://maps.googleapis.com/maps/api/js?key=***REMOVED***&callback=geoFindMeAndInitMap" async defer></script> -->
 
 <script>
     $(function(){
@@ -198,7 +197,6 @@
         })
     }
 </script>
-{% endif %}
 
 <!-- <script type="text/javascript" src="{% static 'wololo/js/villageResources.js' %}"></script> -->
 

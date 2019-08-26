@@ -7,7 +7,7 @@ import urllib.error
 import urllib.request as urllib2
 from django.contrib.auth import authenticate, login, logout
 from .models import UserType, User
-from .forms import RegisterForm, UserForm
+from .forms import RegisterForm, LoginForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import gettext as _
 from django.shortcuts import render
@@ -45,24 +45,24 @@ def register(request):
     return render(request, 'register.html', {'data': data, 'form': form})
 
 def login_view(request):
-    if request.method == 'POST':
-        username = request.POST['email']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
+    form = LoginForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        user = form.login(request)
+        
         if user is not None:
             try:
                 login(request, user)
-                # Redirect to a success page.
+                return redirect(settings.LOGIN_REDIRECT_URL)
             except Exception as err:
                 # if err.code == 400:
                 #     messages.error(request, 'That email is already registered.')
                 # else:
                 #     raise
                 return HttpResponse(err)
-        return redirect(settings.LOGIN_REDIRECT_URL)
+        return render(request, 'login.html', {'form': form})
 
 
-    form = UserForm()
     data = {'de': 'de'}
 
     return render(request, 'login.html', {'data': data, 'form': form})

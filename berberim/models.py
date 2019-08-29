@@ -87,13 +87,9 @@ class User(AbstractUser):
     def get_update_url(self):
         return reverse('berberim_user_update', args=(self.slug,))
     
-    def get_awaiting_review_if_exists(self):
-        print(timezone.localtime())
+    def number_of_unreviewed_past_schedules(self):
         unreviewed_schedules = self.barbershop_schedules.filter(end_time__lte=timezone.localtime(), reviewed=False)
-        if unreviewed_schedules.exists():
-            return unreviewed_schedules.all()
-        else:
-            return None
+        return unreviewed_schedules.count()
 
     @property
     def past_barbershop_schedules(self):

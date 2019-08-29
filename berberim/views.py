@@ -27,7 +27,7 @@ from django.core import serializers
 
 class landing(View):
 
-    def _get_initial_data(self, is_filtered, default_filtered_address):
+    def _get_initial_data(self, is_filtered, default_filtered_address, user):
         if default_filtered_address is not None:
             province_code = default_filtered_address['province_code']
             district_code = default_filtered_address['district_code']
@@ -46,6 +46,12 @@ class landing(View):
                 'default_filtered_address': default_filtered_address
             }
         }
+        if user.is_anonymous is False:
+            if 'customer' == str(user.user_type):
+                
+                data['user_info'] = {
+                    'awaiting_reviews': user.get_awaiting_review_if_exists()
+                }
         return data
 
     def get(self, request, **kwargs):
@@ -57,7 +63,7 @@ class landing(View):
 
         if user.is_anonymous:
             if province and district:
-                data = self._get_initial_data(True, default_filtered_address)
+                data = self._get_initial_data(True, default_filtered_address, user)
 
                 return render(request, 'customer' + '/dashboard.html',
                             {'data': data, 'user': user})
@@ -67,7 +73,7 @@ class landing(View):
                     district_name = District.objects.get(district_code=default_filtered_address['district_code']).district_name.lower()
                     return redirect('landing-with-province-n-district', province=province_name, district=district_name)
                 
-                data = self._get_initial_data(False, default_filtered_address)
+                data = self._get_initial_data(False, default_filtered_address, user)
                 return render(request, 'customer' + '/dashboard.html',
                             {'data': data, 'user': user})
 
@@ -85,7 +91,7 @@ class landing(View):
 
             elif 'customer' == str(user.user_type):
                 if province and district:
-                    data = self._get_initial_data(True, default_filtered_address)
+                    data = self._get_initial_data(True, default_filtered_address, user)
                 else:
                     print("aha")
                     if default_filtered_address:
@@ -93,7 +99,7 @@ class landing(View):
                         district_name = District.objects.get(district_code=default_filtered_address['district_code']).district_name.lower()
                         return redirect('landing-with-province-n-district', province=province_name, district=district_name)
                     
-                    data = self._get_initial_data(False, default_filtered_address)
+                    data = self._get_initial_data(False, default_filtered_address, user)
                     print("yess")
                     print(user.user_type)
                 

@@ -19,6 +19,8 @@ from django.db import models as models
 from django_extensions.db import fields as extension_fields
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext as _
+from django.utils import timezone
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 class UserManager(BaseUserManager):
     """
@@ -84,7 +86,18 @@ class User(AbstractUser):
 
     def get_update_url(self):
         return reverse('berberim_user_update', args=(self.slug,))
+    
+    def get_awaiting_review_if_exists(self):
+        print(timezone.localtime())
+        unreviewed_schedules = self.barbershop_schedules.filter(end_time__lte=timezone.localtime(), reviewed=False)
+        if unreviewed_schedules.exists():
+            return unreviewed_schedules.all()
+        else:
+            return None
 
+    @property
+    def past_barbershop_schedules(self):
+        return self.barbershop_schedules.filter(end_time__lte=timezone.localtime()).all()
 
 class UserType(models.Model):
 
@@ -355,11 +368,12 @@ class BarbershopSchedule(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     created = models.DateTimeField(auto_now_add=True, editable=False)
+    reviewed = models.BooleanField(default=False)
 
     # Relationship Fields
     customer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE, related_name="barbershopschedules", 
+        on_delete=models.CASCADE, related_name="barbershop_schedules", 
     )
     barbershop = models.ForeignKey(
         'berberim.Barbershop',
@@ -382,3 +396,44 @@ class BarbershopSchedule(models.Model):
 
     def get_update_url(self):
         return reverse('berberim_barbershopschedule_update', args=(self.pk,))
+
+
+class Review(models.Model):
+
+    # Fields
+    created = models.DateTimeField(auto_now_add=True, editable=False)
+    review_rate = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[
+            MaxValueValidator(10),
+            MinValueValidator(0)
+        ]
+    )
+
+    # Relationship Fields
+    reviewer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE, related_name="given_reviews", 
+    )
+    reviewed_schedule = models.OneToOneField(
+       'berberim.BarbershopSchedule',
+        on_delete=models.CASCADE, related_name="review", null=True, blank=True
+    )
+    reviewed_barbershop = models.ForeignKey(
+       'berberim.Barbershop',
+        on_delete=models.CASCADE, related_name="customer_reviews", 
+    )
+
+    class Meta:
+        ordering = ('-created',)
+
+    def __unicode__(self):
+        return u'%s' % self.pk
+
+    def get_absolute_url(self):
+        return reverse('berberim_review_detail', args=(self.pk,))
+
+
+    def get_update_url(self):
+        return reverse('berberim_review_update', args=(self.pk,))

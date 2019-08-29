@@ -49,10 +49,19 @@
             <div class="card-body h-100" style="overflow-y:scroll;">
                 <nav>
                     <div class="nav nav-tabs mb-1" id="nav-tab" role="tablist">
-                        <a class="nav-item nav-link active mr-2" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">{% trans "Barbershops Around Me" %}</a>
+                        <a class="nav-item nav-link active mr-2" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">
+                            {% trans "Barbershops Around Me" %}
+                        </a>
                         {% if not user.is_anonymous %}
-                        <a class="nav-item nav-link mr-2" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">{% trans "Visited Barbershops" %}</a>
-                        <a class="nav-item nav-link" id="nav-favbarbers-tab" data-toggle="tab" href="#nav-favbarbers" role="tab" aria-controls="nav-favbarbers" aria-selected="false">{% trans "Favourite Barbershops" %}</a>
+                        <a class="nav-item nav-link mr-2" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">
+                            {% trans "Visited Barbershops" %}
+                            {% if data.user_info.awaiting_reviews %}
+                                <span class="badge badge-primary">{{data.user_info.awaiting_reviews.count}}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-item nav-link" id="nav-favbarbers-tab" data-toggle="tab" href="#nav-favbarbers" role="tab" aria-controls="nav-favbarbers" aria-selected="false">
+                            {% trans "Favourite Barbershops" %}
+                        </a>
                         {% endif %}
                     </div>
                 </nav>
@@ -94,21 +103,18 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- <tr>
-                                        <td><a href="#">Work 1</a></td>
-                                        <td>Doe</td>
-                                        <td>john@example.com</td>
-                                    </tr>
+                                    {% for schedule in user.past_barbershop_schedules %}
                                     <tr>
-                                        <td><a href="#">Work 2</a></td>
-                                        <td>Moe</td>
-                                        <td>mary@example.com</td>
+                                        <td><a href="#">{{schedule.barbershop}}</a></td>
+                                        <td>
+                                            {% if not schedule.reviewed %}
+                                            <button type="button" class="btn btn-primary btn-rounded btn-fw">{% trans "Rate" %}</button>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{schedule}}</td>
+                                        <td>Paid</td>
                                     </tr>
-                                    <tr>
-                                        <td><a href="#">Work 3</a></td>
-                                        <td>Dooley</td>
-                                        <td>july@example.com</td>
-                                    </tr> -->
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
@@ -191,6 +197,10 @@
     }
 
     function initSelectProvinceDistrictForm(){
+        $(".address-filter").each(function(){
+            let addressType = $(this).attr("id").split("_")[2]
+            $("#"+addressType+"Input").val($(this).val()) 
+        })
         $(".address-filter").on("change", function(){
            let addressType = $(this).attr("id").split("_")[2]
            $("#"+addressType+"Input").val($(this).val())

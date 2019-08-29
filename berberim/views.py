@@ -49,9 +49,7 @@ class landing(View):
         if user.is_anonymous is False:
             if 'customer' == str(user.user_type):
                 
-                data['user_info'] = {
-                    'awaiting_reviews': user.get_awaiting_review_if_exists()
-                }
+                pass
         return data
 
     def get(self, request, **kwargs):

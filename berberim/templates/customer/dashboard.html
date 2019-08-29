@@ -55,8 +55,8 @@
                         {% if not user.is_anonymous %}
                         <a class="nav-item nav-link mr-2" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">
                             {% trans "Visited Barbershops" %}
-                            {% if data.user_info.awaiting_reviews %}
-                                <span class="badge badge-primary">{{data.user_info.awaiting_reviews.count}}</span>
+                            {% if user.number_of_unreviewed_past_schedules > 0  %}
+                                <span class="badge badge-primary">{{user.number_of_unreviewed_past_schedules}}</span>
                             {% endif %}
                         </a>
                         <a class="nav-item nav-link" id="nav-favbarbers-tab" data-toggle="tab" href="#nav-favbarbers" role="tab" aria-controls="nav-favbarbers" aria-selected="false">

@@ -2,6 +2,9 @@
 {% load static %}
 {% load sass_tags %}
 {% load i18n %}
+{% load humanize %}
+{% load l10n %}
+
 
 {% block headcdn %}
 <style>
@@ -19,6 +22,9 @@
         box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
         transition: all 0.3s cubic-bezier(.25,.8,.25,1);
     } */
+    .modal{
+        top: 30%;
+    }
 </style>
 {% endblock %}
 
@@ -35,7 +41,7 @@
     </div>
     <div id="content" class="col-9 h-100">
         <div class="card h-100">
-            <button class="openbtn" filter="opened">☰ Toggle Sidebar</button> 
+            <!-- <button class="openbtn" filter="opened">☰ Toggle Sidebar</button>  -->
 
             <!-- <div class="card-body">
                 <ul class="list-group list-group-flush">
@@ -82,7 +88,7 @@
                                     <tr class="clickable-tr" data-href="/barbershop/{{barbershop.slug}}">
                                         <td>{{barbershop.name}}</td>
                                         <td>
-                                            <label class="badge badge-success text-white">8.2</label>
+                                            <label class="badge badge-success text-white">{{barbershop.review_rate|floatformat}}</label>
                                         </td>
                                         <td>3 KM</td>
                                         <td>10-20 TL</td>
@@ -97,8 +103,8 @@
                                 <thead>
                                     <tr>
                                         <th>{% trans "Barbershop" %}</th>
-                                        <th>{% trans "Rated" %}</th>
-                                        <th>{% trans "Distance" %}</th>
+                                        <th>{% trans "Rating" %}</th>
+                                        <th>{% trans "Date" %}</th>
                                         <th>{% trans "Paid" %}</th>
                                     </tr>
                                 </thead>
@@ -108,10 +114,12 @@
                                         <td><a href="#">{{schedule.barbershop}}</a></td>
                                         <td>
                                             {% if not schedule.reviewed %}
-                                            <button type="button" class="btn btn-primary btn-rounded btn-fw">{% trans "Rate" %}</button>
+                                            <button type="button" class="rate-btn btn btn-primary btn-rounded btn-fw" schedule-id="{{schedule.id}}" data-toggle="modal" data-target="#review-modal">{% trans "Rate" %}</button>
+                                            {% else %}
+                                            {% trans "Reted" %} {{schedule.review.review_rate|floatformat}}
                                             {% endif %}
                                         </td>
-                                        <td>{{schedule}}</td>
+                                        <td>{{schedule.end_time|naturaltime}}</td>
                                         <td>Paid</td>
                                     </tr>
                                     {% endfor %}
@@ -137,12 +145,32 @@
     
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="review-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">{% trans "Review the barbershop" %}</h5>
+        </div>
+        <div class="modal-body mx-auto text-center">
+            <div id="rateYo"></div>
+            <p class="mt-2">{% trans "Do you have any comments?" %}</p>
+        </div>
+        <textarea id="comments-input" class="form-control px-2" id="exampleTextarea1" rows="4" placeholder="{% trans 'Your comments...' %}"></textarea>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "Close" %}</button>
+            <button id="submit-review-btn" type="button" class="btn btn-primary" data-dismiss="modal">{% trans "Submit" %}</button>
+        </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 
 {% block footerjs %}
 <script>
-    $("tr").on("click", function(){
+    $(".clickable-tr").on("click", function(){
         window.location = $(this).attr("data-href")
     })
 </script>
@@ -154,7 +182,56 @@
         initProvinceChange()        
         initFilterOpenClose()
         initSelectProvinceDistrictForm()
+        initRateBtn()
+        initSubmitReviewBtn()
+        initRateStar()
     })
+    
+    function initRateBtn(){
+        $(".rate-btn").on("click", function(){
+            let scheduleID = $(this).attr("schedule-id")
+            $("#rateYo").rateYo("rating", 0)
+            $("#submit-review-btn").attr("schedule-id", scheduleID)
+        })
+    }
+
+    function initRateStar(){
+        $("#rateYo").rateYo({
+            halfStar: true
+        })
+    }
+
+    function destroyRateStar(){
+        $("#rateYo").rateYo("destroy");
+    }
+
+    function initSubmitReviewBtn(){
+        $("#submit-review-btn").on("click", function(){
+            let scheduleID = $(this).attr("schedule-id")
+            let barbershopID = $(this).attr("barbershop-id")
+            let rating = $("#rateYo").rateYo("rating")
+            let comments = $("#comments-input").val()
+            console.log(scheduleID, rating, comments)
+            $.blockUI({ message: '{% trans "Please wait" %}' })
+            $.ajax({
+                type: 'POST',
+                url: '{% url "review-barbershop-ajax" %}',
+                data: {
+                    schedule_id: scheduleID,
+                    comments: comments,
+                    review_rate: rating,
+                    csrfmiddlewaretoken: getCookie('csrftoken'),
+                },
+                success:function(data){
+                    $.unblockUI();
+                    console.log("wololo")
+    
+                }
+            })
+            destroyRateStar()
+        })
+    }
+
     function geoFindMeAndInitMap() {
 
         function success(position) {

@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'berberim',
     'sass_processor',
     'debug_toolbar',
@@ -184,3 +185,5 @@ SASS_PROCESSOR_INCLUDE_DIRS = [
 ]
 SASS_PROCESSOR_AUTO_INCLUDE = False
 SASS_PRECISION = 8
+
+USE_L10N=False

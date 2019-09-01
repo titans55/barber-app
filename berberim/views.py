@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, JsonResponse
 from django.shortcuts import redirect, HttpResponse
 
-from .models import UserType, Barbershop, BarbershopSchedule, Province, District
+from .models import UserType, Barbershop, BarbershopSchedule, Province, District, Review
 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -23,6 +23,7 @@ from pprint import pprint
 from django.views import View
 
 from django.core import serializers
+from django.db import transaction
 
 
 class landing(View):
@@ -109,6 +110,40 @@ class landing(View):
         pass
 
 
+@login_required
+def review_barbershop_ajax(request):
+    user = request.user
+
+    schedule_id = int(request.POST['schedule_id'])
+    review_rate = float(request.POST['review_rate'])*2.0
+    comments = request.POST['comments']
+    if not comments: comments = None 
+
+    schedule = BarbershopSchedule.objects.get(id=schedule_id)
+    barbershop = schedule.barbershop
+    with transaction.atomic():
+        Review.objects.create(
+            reviewer = user,
+            reviewed_schedule_id = schedule_id,
+            reviewed_barbershop_id = barbershop.id,
+            review_rate = review_rate,
+            comments = comments
+        )
+        barbershop.set_new_review_rate(review_rate) 
+        schedule.reviewed = True
+        schedule.save()
+    try:
+        pass
+    except Exception as err:
+        #TODO log error
+        return JsonResponse({
+            "status" : "error",
+            # "error" : str(err)
+        })
+    return JsonResponse({
+        "status" : "success",
+    })
+
 def select_province_district(request):
     province_code = request.POST['province_code']
     district_code = request.POST['district_code']
@@ -120,7 +155,7 @@ def select_province_district(request):
         "province_code": province_code,
         "district_code": district_code
     }
-    return redirect('landing-with-province-n-district', province=province_name, district=district_name)  # 4
+    return redirect('landing-with-province-n-district', province=province_name, district=district_name) 
 
 class user_settings_view(View):
 

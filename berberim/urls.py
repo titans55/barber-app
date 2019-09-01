@@ -6,7 +6,8 @@ urlpatterns = [
     path('', views.landing.as_view(), name='landing'),
     path('<province>/<district>-berberler', views.landing.as_view(), name='landing-with-province-n-district'),
     path('select-province-district', views.select_province_district, name='selectProvinceDistrict'),
-    path('login', auth.login_view, name='login'),
+    path('review_barbershop_ajax', views.review_barbershop_ajax, name='review-barbershop-ajax'), #AJAX CALL from landing-with-province-n-district page
+
 
     #customer
     path('barbershop-map', views.map, name='barbershop-map'),
@@ -20,6 +21,7 @@ urlpatterns = [
 
 
     #AUTH
+    path('login', auth.login_view, name='login'),
     path('logout', auth.verify_logout, name='logout'),
     path('register', auth.register, name='register'),
 

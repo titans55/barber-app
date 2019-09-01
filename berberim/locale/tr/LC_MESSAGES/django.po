@@ -199,3 +199,21 @@ msgstr "Lütfen bulunduğunuz il ve ilçeyi(semti) seçiniz."
 
 msgid "Apply"
 msgstr "Uygula"
+
+msgid "Review the barbershop"
+msgstr "Berber dükkanını değerlendir"
+
+msgid "Do you have any comments?"
+msgstr "Yorumunuz var mı?"
+
+msgid "Your comments..."
+msgstr "Yorumlarınız..."
+
+msgid "Close"
+msgstr "Kapat"
+
+msgid "Submit"
+msgstr "Gönder"
+
+msgid "Please wait"
+msgstr "Lütfen bekleyiniz"

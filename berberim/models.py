@@ -125,7 +125,12 @@ class Barbershop(models.Model):
     name = models.CharField(max_length=255)
     slug = extension_fields.AutoSlugField(unique=True, populate_from='name', blank=True)
     created = models.DateTimeField(auto_now_add=True, editable=False)
-
+    review_rate = models.FloatField(
+        validators=[
+            MaxValueValidator(10),
+            MinValueValidator(0),
+        ]
+    )
     # Relationship Fields
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -135,6 +140,12 @@ class Barbershop(models.Model):
        'berberim.Address',
         on_delete=models.CASCADE, related_name="barbershops_2", null=True, blank=True
     )
+    def set_new_review_rate(self, incoming_rate):
+        crc = self.customer_reviews.count()
+        if crc == 0: crc = 1
+        new_review_rate = (float(self.review_rate * crc) + incoming_rate) / float(crc + 1)
+        self.review_rate = new_review_rate
+        self.save()
 
     class Meta:
         ordering = ('-created',)
@@ -398,14 +409,13 @@ class Review(models.Model):
 
     # Fields
     created = models.DateTimeField(auto_now_add=True, editable=False)
-    review_rate = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
+    review_rate = models.FloatField(
         validators=[
             MaxValueValidator(10),
-            MinValueValidator(0)
+            MinValueValidator(0),
         ]
     )
+    comments = models.TextField(max_length=100, null=True)
 
     # Relationship Fields
     reviewer = models.ForeignKey(

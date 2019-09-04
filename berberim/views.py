@@ -375,3 +375,14 @@ class barbershop_view(View):
         except Exception as err:
             raise err
         return redirect("landing")
+
+class barbershop_profile(View):
+
+    def get(self, request, barbershop_slug):
+        user = request.user
+  
+
+        data = {
+            "extend_layout_folder": "extend_layout_folder"
+        }
+        return render(request, 'common/barbershop_profile.html', data)

@@ -15,6 +15,8 @@ urlpatterns = [
     path('user-settings', views.user_settings_view.as_view(), name='user-settings'),
     path('load-districts', views.load_districts_ajax), #AJAX CALL from user-settings page
 
+    #common
+    path('barbershop/<slug:barbershop_slug>/profile', views.barbershop_profile.as_view(), name='barbershop-profile'),
 
 
 

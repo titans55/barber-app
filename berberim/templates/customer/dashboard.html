@@ -78,20 +78,22 @@
                                 <thead>
                                     <tr>
                                         <th>{% trans "Barbershop" %}</th>
-                                        <th>{% trans "Rating" %}</th>
+                                        <th>{% trans "Reviews" %}</th>
                                         <th>{% trans "Distance" %}</th>
                                         <th>{% trans "Cost" %}</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for barbershop in data.barbershops %}
-                                    <tr class="clickable-tr" data-href="/barbershop/{{barbershop.slug}}">
-                                        <td>{{barbershop.name}}</td>
+                                    <tr class="clickable-tr">
+                                        <td><a href="/barbershop/{{barbershop.slug}}/profile" type="button" class="btn btn-primary">{{barbershop.name}}</a></td>
                                         <td>
                                             <label class="badge badge-success text-white">{{barbershop.review_rate|floatformat}}</label>
                                         </td>
                                         <td>3 KM</td>
                                         <td>10-20 TL</td>
+                                        <td><a href="/barbershop/{{barbershop.slug}}" type="button" class="btn btn-primary">{% trans "Book" %}</a></td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

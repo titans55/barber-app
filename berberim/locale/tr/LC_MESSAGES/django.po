@@ -170,7 +170,7 @@ msgstr "Berberler"
 msgid "Barbershop Map"
 msgstr "Berber Haritası"
 
-msgid "Rating"
+msgid "Reviews"
 msgstr "Değerlendirmeler"
 
 msgid "Distance"
@@ -217,3 +217,6 @@ msgstr "Gönder"
 
 msgid "Please wait"
 msgstr "Lütfen bekleyiniz"
+
+msgid "Book"
+msgstr "Rezarvasyon yap"

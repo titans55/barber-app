@@ -380,9 +380,14 @@ class barbershop_profile(View):
 
     def get(self, request, barbershop_slug):
         user = request.user
-  
+        try:
+            barbershop = Barbershop.objects.get(slug=barbershop_slug)
+        except:
+            return HttpResponseNotFound("hello")   
+
+
 
         data = {
-            "extend_layout_folder": "extend_layout_folder"
+            "barbershop": barbershop
         }
-        return render(request, 'common/barbershop_profile.html', data)
+        return render(request, 'common/barbershop_profile.html', context=data)

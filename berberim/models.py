@@ -131,6 +131,7 @@ class Barbershop(models.Model):
             MinValueValidator(0),
         ]
     )
+    about = models.CharField(max_length=1000, null=True)
     # Relationship Fields
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,

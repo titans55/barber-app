@@ -127,11 +127,22 @@ class BarberUserSettingsForm(forms.Form):
             attrs={
                 'class':'form-control',
                 'placeholder':'Mahalle/Cadde/Sokak, Bina/Daire No.',
-                'rows':5
+                'rows':2
             }
         ),
         required=False,
         label=_('Address')
+    )
+    about = forms.CharField(
+        max_length=1000,
+        widget= forms.Textarea(
+            attrs={
+                'class':'form-control',
+                'rows':5
+            }
+        ),
+        required=False,
+        label=_("Fill the 'about' section which would display in barbershop profile page")
     )
     address_lat = forms.DecimalField(
         decimal_places=6,
@@ -153,12 +164,13 @@ class BarberUserSettingsForm(forms.Form):
                 owner=user
             )
             barbershop.name = self.cleaned_data['barbershop_name']
+            barbershop.about = self.cleaned_data['about']
             barbershop.save()
 
             barbershop.address.country = Country.objects.get(country_code=self.cleaned_data['address_country'])
             barbershop.address.province = Province.objects.get(province_code=self.cleaned_data['address_province'])
             barbershop.address.district = District.objects.get(district_code=self.cleaned_data['address_district'])
-            barbershop.address.description = self.cleaned_data['address_description']
+            barbershop.address.description = self.cleaned_data['address_description'] if self.cleaned_data['address_description'].strip() else None
             barbershop.address.lat = self.cleaned_data['address_lat']
             barbershop.address.lng = self.cleaned_data['address_lng']
             barbershop.address.save()

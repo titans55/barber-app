@@ -58,16 +58,49 @@
                     </div>
                     <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                         <div class="row">
-                            {% lorem %}
+                            <table class="table table-hover text-center" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>{% trans "Service Name" %}</th>
+                                        <th>{% trans "Price" %}</th>
+                                        <th>{% trans "Duration" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for service in barbershop.services.all %}
+                                        <tr>
+                                            <td>{{service.name}}</td>
+                                            <td>{{service.price}} TL</td>
+                                            <td>{{service.duration_mins}} {% trans "Minutes" %}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
                         <div class="row">
-                            {% lorem %}
+                            <table class="table table-hover text-center" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>{% trans "Reviewer" %}</th>
+                                        <th>{% trans "Comments" %}</th>
+                                        <th>{% trans "Rated" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for review in barbershop.customer_reviews.all %}
+                                        <tr>
+                                            <td>{{review.reviewer.email}}</td>
+                                            <td>{{review.comments}}</td>
+                                            <td>Rated {{review.review_rate|floatformat}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
-          
             </div>
         </div>
     </div>

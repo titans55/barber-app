@@ -1,3 +1,5 @@
+import os
+
 def get_user(request):
     if request.user:
         return {
@@ -8,3 +10,8 @@ def get_user(request):
             'user': 'guest'
         }
     
+def get_google_maps_api_key():
+
+    return {
+        'GOOGLE_MAPS_API_KEY' : os.environ['GOOGLE_MAPS_API_KEY']
+    }

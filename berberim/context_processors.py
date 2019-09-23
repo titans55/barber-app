@@ -10,7 +10,7 @@ def get_user(request):
             'user': 'guest'
         }
     
-def get_google_maps_api_key():
+def get_google_maps_api_key(request):
 
     return {
         'GOOGLE_MAPS_API_KEY' : os.environ['GOOGLE_MAPS_API_KEY']

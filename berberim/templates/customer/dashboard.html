@@ -105,7 +105,7 @@
                                 <thead>
                                     <tr>
                                         <th>{% trans "Barbershop" %}</th>
-                                        <th>{% trans "Rating" %}</th>
+                                        <th>{% trans "Reviews" %}</th>
                                         <th>{% trans "Date" %}</th>
                                         <th>{% trans "Paid" %}</th>
                                     </tr>
@@ -114,11 +114,11 @@
                                     {% for schedule in user.past_barbershop_schedules %}
                                     <tr>
                                         <td><a href="#">{{schedule.barbershop}}</a></td>
-                                        <td>
+                                        <td class="text-center justify-content-center px-auto">
                                             {% if not schedule.reviewed %}
-                                            <button type="button" class="rate-btn btn btn-primary btn-rounded btn-fw" schedule-id="{{schedule.id}}" data-toggle="modal" data-target="#review-modal">{% trans "Rate" %}</button>
+                                            <button type="button" class="rate-btn btn btn-primary btn-rounded btn-fw" schedule-id="{{schedule.id}}" data-toggle="modal" data-target="#review-modal">{% trans "Review" %}</button>
                                             {% else %}
-                                            {% trans "Reted" %} {{schedule.review.review_rate|floatformat}}
+                                            <div class="rateYo mx-auto" rating="{{schedule.review.review_rate|floatformat}}" ></div>
                                             {% endif %}
                                         </td>
                                         <td>{{schedule.end_time|naturaltime}}</td>
@@ -155,7 +155,7 @@
             <h5 class="modal-title" id="exampleModalLabel">{% trans "Review the barbershop" %}</h5>
         </div>
         <div class="modal-body mx-auto text-center">
-            <div id="rateYo"></div>
+            <div id="review-rate-yo" class="rateYo"></div>
             <p class="mt-2">{% trans "Do you have any comments?" %}</p>
         </div>
         <textarea id="comments-input" class="form-control px-2" id="exampleTextarea1" rows="4" placeholder="{% trans 'Your comments...' %}"></textarea>
@@ -185,34 +185,39 @@
         initSelectProvinceDistrictForm()
         initRateBtn()
         initSubmitReviewBtn()
-        initRateStar()
+        initRateStars()
     })
     
     function initRateBtn(){
         $(".rate-btn").on("click", function(){
             let scheduleID = $(this).attr("schedule-id")
-            $("#rateYo").rateYo("rating", 0)
+            $("#review-rate-yo").rateYo("rating", 0)
             $("#submit-review-btn").attr("schedule-id", scheduleID)
         })
     }
 
-    function initRateStar(){
-        $("#rateYo").rateYo({
-            halfStar: true
+    function initRateStars(){
+        $(".rateYo").each(function(){
+            $rateyo = $(this).rateYo({
+                halfStar: true
+            })
+            const rating = parseInt($(this).attr("rating"))
+            if(rating){
+                $rateyo.rateYo("option", "readOnly", true).rateYo("rating", rating/2)
+            }
         })
     }
 
     function destroyRateStar(){
-        $("#rateYo").rateYo("destroy");
+        $("#review-rate-yo").rateYo("destroy");
     }
 
     function initSubmitReviewBtn(){
         $("#submit-review-btn").on("click", function(){
             let scheduleID = $(this).attr("schedule-id")
             let barbershopID = $(this).attr("barbershop-id")
-            let rating = $("#rateYo").rateYo("rating")
+            let rating = $("#review-rate-yo").rateYo("rating")
             let comments = $("#comments-input").val()
-            console.log(scheduleID, rating, comments)
             $.blockUI({ message: '{% trans "Please wait" %}' })
             $.ajax({
                 type: 'POST',
@@ -226,7 +231,20 @@
                 success:function(data){
                     $.unblockUI();
                     console.log("wololo")
-    
+                    if(data['status']=='success'){
+                        Swal.fire({
+                            type: 'success',
+                            title: '{% trans "Your review successfully submitted." %}',
+                            showConfirmButton: false,
+                            timer: 2000
+                        })
+                    }else{
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Oops...',
+                            text: '{% trans "Something went wrong!" %}',
+                        })
+                    }
                 }
             })
             destroyRateStar()

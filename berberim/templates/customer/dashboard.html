@@ -88,8 +88,12 @@
                                     {% for barbershop in data.barbershops %}
                                     <tr class="clickable-tr">
                                         <td><a href="/barbershop/{{barbershop.slug}}/profile" type="button" class="btn btn-primary">{{barbershop.name}}</a></td>
-                                        <td>
+                                        <td>   
+                                            {% if barbershop.customer_reviews.count > 0 %}
                                             <label class="badge badge-success text-white">{{barbershop.review_rate|floatformat}}</label>
+                                            {% else %}
+                                            {% trans 'Has no reviews' %}
+                                            {% endif %}
                                         </td>
                                         <td>3 KM</td>
                                         <td>10-20 TL</td>

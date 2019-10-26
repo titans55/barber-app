@@ -129,7 +129,8 @@ class Barbershop(models.Model):
         validators=[
             MaxValueValidator(10),
             MinValueValidator(0),
-        ]
+        ],
+        default=0
     )
     about = models.CharField(max_length=1000, null=True)
     # Relationship Fields

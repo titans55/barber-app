@@ -193,6 +193,9 @@ class BarbershopEmployee(models.Model):
     class Meta:
         ordering = ('-created',)
 
+    def __str__(self):
+        return self.full_name
+
     def __unicode__(self):
         return u'%s' % self.pk
 

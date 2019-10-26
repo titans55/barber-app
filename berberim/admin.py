@@ -143,7 +143,7 @@ class BarbershopScheduleAdminForm(forms.ModelForm):
 
 class BarbershopScheduleAdmin(admin.ModelAdmin):
     form = BarbershopScheduleAdminForm
-    list_display = ['created', 'barbershop', 'services', 'start_time', 'end_time']
+    list_display = ['created', 'barbershop', 'services', 'start_time', 'end_time', 'customer', 'barbershop', 'assigned_employee']
     readonly_fields = ['created']
 
 admin.site.register(BarbershopSchedule, BarbershopScheduleAdmin)

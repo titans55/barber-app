@@ -113,36 +113,39 @@ class landing(View):
 @login_required
 def review_barbershop_ajax(request):
     user = request.user
-
     schedule_id = int(request.POST['schedule_id'])
     review_rate = float(request.POST['review_rate'])*2.0
     comments = request.POST['comments']
     if not comments: comments = None 
 
-    schedule = BarbershopSchedule.objects.get(id=schedule_id)
-    barbershop = schedule.barbershop
-    with transaction.atomic():
-        Review.objects.create(
-            reviewer = user,
-            reviewed_schedule_id = schedule_id,
-            reviewed_barbershop_id = barbershop.id,
-            review_rate = review_rate,
-            comments = comments
-        )
-        barbershop.set_new_review_rate(review_rate) 
-        schedule.reviewed = True
-        schedule.save()
     try:
-        pass
-    except Exception as err:
-        #TODO log error
+        schedule = BarbershopSchedule.objects.get(id=schedule_id)
+    except BarbershopSchedule.DoesNotExist:
         return JsonResponse({
-            "status" : "error",
-            # "error" : str(err)
+            "status" : "fail",
         })
-    return JsonResponse({
-        "status" : "success",
-    })
+    
+    if schedule.customer == user and not schedule.reviewed:
+        barbershop = schedule.barbershop
+        with transaction.atomic():
+            Review.objects.create(
+                reviewer = user,
+                reviewed_schedule_id = schedule_id,
+                reviewed_barbershop_id = barbershop.id,
+                review_rate = review_rate,
+                comments = comments
+            )
+            barbershop.set_new_review_rate(review_rate) 
+            schedule.reviewed = True
+            schedule.save()
+
+        return JsonResponse({
+            "status" : "success",
+        })
+    else:
+        return JsonResponse({
+            "status": "fail"
+        })
 
 def select_province_district(request):
     province_code = request.POST['province_code']

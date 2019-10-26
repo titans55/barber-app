@@ -81,18 +81,34 @@ crossorigin=""/>
             let origin = $(location).attr("origin")
             // Create markers.
             {% for barbershop in data.barbershops %}
-            
-            var myLatLng = {lat: {{barbershop.address.lat|unlocalize}}, lng:{{barbershop.address.lng|unlocalize}}};
-            var marker = new google.maps.Marker({
-                position: myLatLng,
-                map: map,
-                icon: {
-                    url: '{% static "img/icons/barbershop-icon.png" %}',
-                    scaledSize: new google.maps.Size(48, 48)
-                },
-                title: 'Hello World!'
-            });
+                myLatLng = {lat: {{barbershop.address.lat|unlocalize}}, lng:{{barbershop.address.lng|unlocalize}}};
+                marker = new google.maps.Marker({
+                    position: myLatLng,
+                    map: map,
+                    icon: {
+                        url: '{% static "img/icons/barbershop_map_icon_with_circle.png" %}',
+                        scaledSize: new google.maps.Size(48, 48)
+                    },
+                    title: 'Hello World!'
+                });
+                barbershopMarkers.push({
+                    marker: marker,
+                    merker_info_html: "<h2>dsadsdsa</h2>"
+                })
+
+        
             {% endfor %}
+            
+            for(i=0; i<barbershopMarkers.length; i++){
+                let infoWindow = new google.maps.InfoWindow({
+                    content: barbershopMarkers[i].merker_info_html
+                });
+
+                google.maps.event.addListener(barbershopMarkers[i].marker, 'click', function () {
+                    infoWindow.open(map, this);
+                });
+            }
+            
 
         }
 

@@ -190,3 +190,6 @@ SASS_PROCESSOR_AUTO_INCLUDE = False
 SASS_PRECISION = 8
 
 USE_L10N=False
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

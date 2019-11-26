@@ -448,3 +448,35 @@ class Review(models.Model):
 
     def get_update_url(self):
         return reverse('berberim_review_update', args=(self.pk,))
+
+
+class BarbershopImage(models.Model):
+
+    # Fields
+    id = models.AutoField(primary_key=True)
+    created = models.DateTimeField(auto_now_add=True, editable=False)
+    last_updated = models.DateTimeField(auto_now=True, editable=False)
+    image = models.ImageField(upload_to="images/")
+
+    # Relationship Fields
+    uploaded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE, related_name="uploaded_barbershop_images", 
+    )
+    barbershop = models.ForeignKey(
+       'berberim.Barbershop',
+        on_delete=models.CASCADE, related_name="images", 
+    )
+
+    class Meta:
+        ordering = ('-created',)
+
+    def __unicode__(self):
+        return u'%s' % self.pk
+
+    def get_absolute_url(self):
+        return reverse('berberim_image_detail', args=(self.pk,))
+
+
+    def get_update_url(self):
+        return reverse('berberim_image_update', args=(self.pk,))

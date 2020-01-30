@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User, UserType, Barbershop, BarbershopEmployee, EMPLOYEE_TITLES_CHOICES,\
-    SERVICE_NAME_CHOICES, Address, BarbershopServices, Country, Province, District
+    SERVICE_NAME_CHOICES, Address, BarbershopServices, Country, Province, District, BarbershopImage
 from django.utils.translation import gettext as _
 import re
 from django.core.validators import RegexValidator
@@ -314,3 +314,8 @@ class BarbershopServicesForm(forms.ModelForm):
             return barbershop_service
         except Exception as err:
             raise(err)
+
+class BarbershopImageForm(forms.ModelForm):
+    class Meta:
+        model = BarbershopImage
+        fields = ('image', 'uploaded_by', 'barbershop')

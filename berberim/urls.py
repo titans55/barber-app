@@ -13,6 +13,7 @@ urlpatterns = [
     path('barbershop-map', views.map, name='barbershop-map'),
     path('barbershop/<slug:barbershop_slug>', views.barbershop_view.as_view(), name='barbershop'),
     path('user-settings', views.user_settings_view.as_view(), name='user-settings'),
+    path('user-settings/add-photo', views.userSettingsAddPhoto.as_view(), name='user-settings-add-photo'),
     path('load-districts', views.load_districts_ajax), #AJAX CALL from user-settings page
 
     #common

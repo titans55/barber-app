@@ -117,7 +117,7 @@
                                 <tbody>
                                     {% for schedule in user.past_barbershop_schedules %}
                                     <tr>
-                                        <td><a href="#">{{schedule.barbershop}}</a></td>
+                                        <td><a href="/barbershop/{{schedule.barbershop.slug}}/profile" type="button" class="btn btn-primary">{{schedule.barbershop.name}}</a></td>
                                         <td class="text-center justify-content-center px-auto">
                                             {% if not schedule.reviewed %}
                                             <button type="button" class="rate-btn btn btn-primary btn-rounded btn-fw" schedule-id="{{schedule.id}}" data-toggle="modal" data-target="#review-modal">{% trans "Review" %}</button>

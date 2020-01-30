@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponseNotFound, JsonResponse
 from django.shortcuts import redirect, HttpResponse
 
-from .models import UserType, Barbershop, BarbershopSchedule, Province, District, Review
+from .models import UserType, Barbershop, BarbershopSchedule, Province, District, Review, BarbershopImage
 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -16,7 +16,7 @@ from django.utils.translation import gettext as _
 from datetime import datetime
 from dateutil import parser
 from django.utils import timezone
-from .forms import BarberUserSettingsForm, EmployeeForm, BarbershopServicesForm
+from .forms import BarberUserSettingsForm, EmployeeForm, BarbershopServicesForm, BarbershopImageForm
 from django.forms import formset_factory
 
 from pprint import pprint
@@ -306,6 +306,41 @@ class user_settings_view(View):
         
         return form, employee_formset, barbershop_services_formset, extra
     
+class userSettingsAddPhoto(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        user = self.request.user
+        try:
+            barbershop = Barbershop.objects.get(owner=user)
+        except Barbershop.DoesNotExist:
+            return "Barbershop doesnt exist"
+        
+        data = {
+            "barbershop_images": barbershop.images
+        }
+        return render(request, str(user.user_type) + '/add-photos.html', {'data': data})
+
+
+    @method_decorator(login_required)
+    def post(self, request):
+        user = self.request.user
+        image = request.FILES.get("image-input")
+        barbershop = Barbershop.objects.get(owner=user)
+        barbershop_image = BarbershopImage(
+            uploaded_by=user,
+            image=image,
+            barbershop=barbershop
+        )
+        form = BarbershopImageForm(
+            instance=barbershop_image
+        )
+        if form.is_valid():
+            form.save()
+        else:
+            print(form.errors)
+            print("asddsa")
+        return render(request, str(user.user_type) + '/add-photos.html', {'form': form})
+
 def load_districts_ajax(request):
     if request.method == "POST":
         province_code = request.POST.get("province_code")

@@ -16,7 +16,7 @@ from django.utils.translation import gettext as _
 from datetime import datetime
 from dateutil import parser
 from django.utils import timezone
-from .forms import BarberUserSettingsForm, EmployeeForm, BarbershopServicesForm, BarbershopImageForm
+from .forms import BarberUserSettingsForm, EmployeeForm, BarbershopServiceForm, BarbershopImageForm
 from django.forms import formset_factory
 
 from pprint import pprint
@@ -285,10 +285,10 @@ class user_settings_view(View):
                 employee_formset = formset_factory(EmployeeForm, extra=extra)(request_post)
 
             if barbershop.services.exists():
-                BarbershopServicesFormset = formset_factory(BarbershopServicesForm, extra=0)
+                BarbershopServicesFormset = formset_factory(BarbershopServiceForm, extra=0)
                 barbershop_services_formset = BarbershopServicesFormset(
                     request_post,
-                    initial=[{'id':serv.id, 'name': serv.name, 'price': serv.price, 'duration_mins': serv.duration_mins} for serv in barbershop.services.all().order_by('id')],
+                    initial=[{'id':serv.id, 'name': serv.service.name, 'price': serv.price, 'duration_mins': serv.duration_mins} for serv in barbershop.services.all().order_by('id')],
                     prefix='barbershop_services'
                 )
             else:
@@ -299,7 +299,7 @@ class user_settings_view(View):
             extra = 1 if extra is None else extra
             employee_formset = formset_factory(EmployeeForm, extra=extra)(request_post, prefix='employees')
 
-            BarbershopServicesFormset = formset_factory(BarbershopServicesForm, extra=3)
+            BarbershopServicesFormset = formset_factory(BarbershopServiceForm, extra=3)
             barbershop_services_formset = BarbershopServicesFormset(
                 request_post, prefix='barbershop_services'
             )

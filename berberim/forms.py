@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User, UserType, Barbershop, BarbershopEmployee, EMPLOYEE_TITLES_CHOICES,\
-    SERVICE_NAME_CHOICES, Address, BarbershopServices, Country, Province, District, BarbershopImage
+    SERVICE_NAME_CHOICES, Address, BarbershopService, Country, Province, District, BarbershopImage
 from django.utils.translation import gettext as _
 import re
 from django.core.validators import RegexValidator
@@ -185,7 +185,7 @@ class BarberUserSettingsForm(forms.Form):
             )
 
             for sevice_name in SERVICE_NAME_CHOICES:
-                BarbershopServices.objects.create(
+                BarbershopService.objects.create(
                     name=sevice_name[0],
                     barbershop=barbershop
                 )
@@ -286,7 +286,7 @@ class EmployeeForm(forms.ModelForm):
             return employee
 
 
-class BarbershopServicesForm(forms.ModelForm):
+class BarbershopServiceForm(forms.ModelForm):
     id = forms.IntegerField(
         widget= forms.NumberInput(attrs={'class':'d-none', 'readonly':'readonly'}),
         disabled=True
@@ -302,12 +302,12 @@ class BarbershopServicesForm(forms.ModelForm):
         widget=forms.NumberInput(attrs={'class':'form-control text-center'})
     )
     class Meta:
-        model = BarbershopServices
+        model = BarbershopService
         fields = ['id', 'name', 'price', 'duration_mins']        
 
     def save(self, barbershop):
         try:
-            barbershop_service = BarbershopServices.objects.filter(
+            barbershop_service = BarbershopService.objects.filter(
                 id=self.cleaned_data['id'],
             ).update(**self.cleaned_data)
 

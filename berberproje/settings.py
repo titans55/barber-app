@@ -60,6 +60,7 @@ class SettingsBackend(object):
 # Application definition
 
 INSTALLED_APPS = [
+    'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -151,10 +152,17 @@ INTERNAL_IPS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
+gettext = lambda s: s
 LANGUAGES = (
-    ('tr', ('Turkish')),
+    ('tr', gettext('Turkish')),
+    ('en', gettext('English')),
 )
+
 LANGUAGE_CODE = 'tr'
+
+MODELTRANSLATION_TRANSLATION_FILES = (
+    'berberim.translation',
+)
 
 TIME_ZONE = 'Europe/Istanbul'
 

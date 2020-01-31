@@ -1,10 +1,11 @@
 from django.contrib import admin
 from django import forms
-from .models import UserType, User, Barbershop, Address, BarbershopServices, BarbershopSchedule, BarbershopEmployee, \
-    Country, Province, District, BarbershopImage
+from .models import UserType, User, Barbershop, Address, BarbershopService, BarbershopSchedule, BarbershopEmployee, \
+    Country, Province, District, BarbershopImage, Service
 
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm
+from modeltranslation.admin import TranslationAdmin
 
 class UserChangeForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
@@ -120,19 +121,19 @@ class DistrictAdmin(admin.ModelAdmin):
 
 admin.site.register(District, DistrictAdmin)
 
-class BarbershopServicesAdminForm(forms.ModelForm):
+class BarbershopServiceAdminForm(forms.ModelForm):
 
     class Meta:
-        model = BarbershopServices
+        model = BarbershopService
         fields = '__all__'
 
 
-class BarbershopServicesAdmin(admin.ModelAdmin):
-    form = BarbershopServicesAdminForm
-    list_display = ['id', 'name', 'price', 'duration_mins', 'barbershop', 'created']
+class BarbershopServiceAdmin(admin.ModelAdmin):
+    form = BarbershopServiceAdminForm
+    list_display = ['id', 'service', 'price', 'duration_mins', 'barbershop', 'created']
     readonly_fields = ['created']
 
-admin.site.register(BarbershopServices, BarbershopServicesAdmin)
+admin.site.register(BarbershopService, BarbershopServiceAdmin)
 
 class BarbershopScheduleAdminForm(forms.ModelForm):
 
@@ -162,3 +163,21 @@ class BarbershopImageAdmin(admin.ModelAdmin):
     readonly_fields = ['id', 'created', 'last_updated']
 
 admin.site.register(BarbershopImage, BarbershopImageAdmin)
+
+
+class ServiceAdminForm(forms.ModelForm):
+
+    class Meta:
+        model = Service
+        fields = '__all__'
+
+
+class ServiceAdmin(admin.ModelAdmin):
+    form = ServiceAdminForm
+    list_display = ['id', 'name', 'name_en', 'created']
+
+
+class MyTranslatedServiceAdmin(ServiceAdmin, TranslationAdmin):
+    pass
+
+admin.site.register(Service, MyTranslatedServiceAdmin)

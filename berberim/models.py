@@ -215,11 +215,31 @@ SERVICE_NAME_CHOICES = [
     ('Hair Wash', _('Hair Wash')),
 ]
 
-class BarbershopServices(models.Model):
+class Service(models.Model):
 
     # Fields
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=30, choices=SERVICE_NAME_CHOICES)
+    name = models.CharField(max_length=30)
+    created = models.DateTimeField(auto_now_add=True, editable=False)
+
+    def __str__(self):
+        return self.name
+
+    def __unicode__(self):
+        return u'%s' % self.pk
+
+    def get_absolute_url(self):
+        return reverse('berberim_service_detail', args=(self.pk,))
+
+
+    def get_update_url(self):
+        return reverse('berberim_service_update', args=(self.pk,))
+
+
+class BarbershopService(models.Model):
+
+    # Fields
+    id = models.AutoField(primary_key=True)
     price = models.PositiveIntegerField(default=10)
     duration_mins = models.PositiveSmallIntegerField(default=20)
     created = models.DateTimeField(auto_now_add=True, editable=False)
@@ -229,6 +249,10 @@ class BarbershopServices(models.Model):
         'berberim.Barbershop',
         on_delete=models.CASCADE, related_name="services", 
     )
+    service = models.ForeignKey(
+        'berberim.Service',
+        on_delete=models.CASCADE 
+    )
 
     class Meta:
         ordering = ('-created',)
@@ -237,11 +261,11 @@ class BarbershopServices(models.Model):
         return u'%s' % self.pk
 
     def get_absolute_url(self):
-        return reverse('berberim_barbershopservices_detail', args=(self.pk,))
+        return reverse('berberim_barbershopservice_detail', args=(self.pk,))
 
 
     def get_update_url(self):
-        return reverse('berberim_barbershopservices_update', args=(self.pk,))
+        return reverse('berberim_barbershopservice_update', args=(self.pk,))
 
         
 class Address(models.Model):

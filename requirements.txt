@@ -1,1 +1,2 @@
 geopy=1.20.0
+django-modeltranslation=0.14.2

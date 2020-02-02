@@ -288,7 +288,7 @@ class user_settings_view(View):
                 BarbershopServicesFormset = formset_factory(BarbershopServiceForm, extra=0)
                 barbershop_services_formset = BarbershopServicesFormset(
                     request_post,
-                    initial=[{'id':serv.id, 'name': serv.service.name, 'price': serv.price, 'duration_mins': serv.duration_mins} for serv in barbershop.services.all().order_by('id')],
+                    initial=[{'id':serv.id, 'service': serv.service, 'price': serv.price, 'duration_mins': serv.duration_mins} for serv in barbershop.services.all().order_by('id')],
                     prefix='barbershop_services'
                 )
             else:
@@ -380,14 +380,13 @@ class barbershop_view(View):
                 'name': barbershop.name,
                 'slug': barbershop.slug,
                 'id': barbershop.id,
-                'services': list(barbershop.services.all().values()),
+                'services': list(barbershop.services.all()),
                 'employees': list(barbershop.employees.all().values()),
-                'schedules': list(barbershop.schedules.filter(start_time__day=now.day).values(
+                'schedules': json.loads(json.dumps(list(barbershop.schedules.filter(start_time__day=now.day).values(
                     'start_time__hour', 'start_time__minute', 'end_time__hour', 'end_time__minute', 'assigned_employee'
-                    ))
+                    )), cls=DjangoJSONEncoder))
             }
         }
-        data = json.loads(json.dumps(data, cls=DjangoJSONEncoder))
         print(data)
         return render(request, str(user.user_type) + '/barbershop.html', data)
 

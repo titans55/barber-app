@@ -291,8 +291,8 @@ class BarbershopServiceForm(forms.ModelForm):
         widget= forms.NumberInput(attrs={'class':'d-none', 'readonly':'readonly'}),
         disabled=True
     )
-    name = forms.CharField(
-        widget=forms.TextInput(attrs={'class':'d-none', 'readonly':'readonly'}),
+    service = forms.ChoiceField(
+        widget=forms.TextInput(attrs={'class':'form-control text-center', 'readonly':'readonly'}),
         disabled=True
     )
     price = forms.IntegerField(
@@ -303,7 +303,7 @@ class BarbershopServiceForm(forms.ModelForm):
     )
     class Meta:
         model = BarbershopService
-        fields = ['id', 'name', 'price', 'duration_mins']        
+        fields = ['id', 'service', 'price', 'duration_mins']        
 
     def save(self, barbershop):
         try:

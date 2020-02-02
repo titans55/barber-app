@@ -88,18 +88,18 @@
                             <input id="extra" type="hidden" name="extra" value="{{extra}}">
                             <div class="form-group">
                                 <fieldset>
-                                    {{employee_formset.management_form }}
+                                    {{ employee_formset.management_form }}
                                     {% for form in employee_formset %}
                                     <div class="form-inline form-row">
                                         <div class="employee_id_input d-none">{{form.id}}</div>
                                         {{ form.title }}
                                         {{ form.name }}                                    
                                         {{ form.surname }}
-                                        {{form.errors}}
+                                        {{ form.errors }}
                                     </div>
                                     {% endfor %}
                                     <!-- <input type="submit" name="action" value="+" class="btn btn-success float-right mr-2"> -->
-                                    <button class="btn btn-success add-form-row float-right mr-4">+</button>
+                                    <button id="add-employee-form-row" class="btn btn-primary float-right mr-4">+</button>
                                 </fieldset>
                             </div>
                             {% endif %}
@@ -108,44 +108,39 @@
                                 <div class="form-group">
                                     <table class="table text-center">
                                         <thead>
-                                            <tr>
-                                                <th></th>
-                                                <th class="pr-5"><div class="pr-3">{% trans 'Price' %}</div></th>
-                                                <th>{% trans 'Duration(minutes)' %}</th>
+                                            <tr class="row">
+                                                <th class="col">{% trans 'Service name' %}</th>
+                                                <th class="col">{% trans 'Price' %}</th>
+                                                <th class="col">{% trans 'Duration(minutes)' %}</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            {{barbershop_services_formset.management_form }}
-                                            {% for form in barbershop_services_formset %}
-                                            <tr>
-                                                {{ form.id }}
-                                                <td>
-                                                    <input type="text" value="{% trans form.name.value %}" class="form-control text-center" readonly>   
-    
-                                                    {{ form.name }}
-                                                </td>
-                                                <td>
-                                                    <div class="input-group">
-                                                    {{ form.price }}  
-                                                    <div class="input-group-append">
-                                                        <span class="input-group-text">TL</span>
-                                                    </div>
-                                                </div>
-                                                </td>
-                                                <td>{{ form.duration_mins }}</td>
-                                                <div class="danger">
-                                                    {{form.errors}}
-                                                </div>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
                                     </table>
+                                    <fieldset>
+                                        {{ barbershop_services_formset.management_form }}
+                                        {% for form in barbershop_services_formset %}
+                                        <div class="form-inline form-row justify-content-center">
+                                            <div class="barbershop_services d-none">{{form.id}}</div>
+                                            {% comment %} <input type="text" value="{% trans form.service__name.value %}" class="form-control text-center" readonly>    {% endcomment %}
+                                            <div class="input-group">
+                                                {{ form.service }}
+                                            </div>
+                                            <div class="input-group">
+                                                {{ form.price }}  
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">TL</span>
+                                                </div>
+                                            </div>
+                                            {{ form.duration_mins }}
+                                            
+                                            {{ form.errors }}
+                                        </div>
+                                        {% endfor %}
+                                        <!-- <input type="submit" name="action" value="+" class="btn btn-success float-right mr-2"> -->
+                                        <button id="add-barbershopservice-form-row" class="btn btn-primary float-right mr-4">+</button>
+                                    </fieldset>
                                 </div>
                             {% endif %}
-                            <a href="{% url 'user-settings-add-photo' %}" type="button" class="button btn btn-primary float-right">
-                                <i class="fas fa-plus-circle"></i>
-                                {% trans 'Add photos of your barbershop' %}
-                            </a>
+                            {% lorem 5 b random %}
                         </div>
                     </div>
                 {% endif %}
@@ -180,17 +175,28 @@
     var geocoder;
     $(()=>{
         $('.init-select2').select2();
-        $(document).on('click', '.add-form-row', function(e){
+        $(document).on('click', '#add-employee-form-row', function(e){
             e.preventDefault();
             $(".init-select2").select2("destroy")
             // $(".init-select2")
             //     .removeAttr("data-select2-id aria-hidden tabindex")
             //     .removeClass("select2-hidden-accessible")
-            cloneMore('.form-row:last', 'employees');
+            cloneMore($(this).closest("fieldset").find('.form-row:last'), 'employees');
             $(".init-select2").select2(); //reinit 
 
             return false;
         });
+        $(document).on('click', '#add-barbershopservice-form-row', function(e){
+            e.preventDefault();
+            $(".init-select2").select2("destroy")
+            // $(".init-select2")
+            //     .removeAttr("data-select2-id aria-hidden tabindex")
+            //     .removeClass("select2-hidden-accessible")
+            cloneMore($(this).closest("fieldset").find('.form-row:last'), 'barbershop_services');
+            $(".init-select2").select2(); //reinit 
+
+            return false;
+        })
         $(document).on('click', '.remove-form-row', function(e){
             e.preventDefault();
             deleteForm('employees', $(this));
@@ -205,31 +211,32 @@
     //dynamically add form--
 
     function updateElementIndex(el, prefix, ndx) {
-        var id_regex = new RegExp('(' + prefix + '-\\d+)');
-        var replacement = prefix + '-' + ndx;
+        let id_regex = new RegExp('(' + prefix + '-\\d+)');
+        let replacement = prefix + '-' + ndx;
         if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
         if (el.id) el.id = el.id.replace(id_regex, replacement);
         if (el.name) el.name = el.name.replace(id_regex, replacement);
     }
-    function cloneMore(selector, prefix) {
+    function cloneMore($elementToClone, prefix) {
         
-        var newElement = $(selector).clone(true);
-        var total = $('#id_' + prefix + '-TOTAL_FORMS').val();
-        var selectTagID
+        let newElement = $elementToClone.clone(true);
+        let total = $('#id_' + prefix + '-TOTAL_FORMS').val();
+        let selectTagID
         newElement.find('select, input:not([type=button]):not([type=submit]):not([type=reset])').each(function() {
+            console.log($(this))
             if(typeof total === "undefined"){
                 total = $(".form-row").length
                 $("#id_form-TOTAL_FORMS").val(total+1)
             }
-            var name = $(this).attr('name').replace('-' + (total-1) + '-', '-' + total + '-');
-            var id = 'id_' + name;
+            let name = $(this).attr('name').replace('-' + (total-1) + '-', '-' + total + '-');
+            let id = 'id_' + name;
             if($(this).prop("tagName")=='SELECT') selectTagID = id
             $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
         });
         total++;
         $('#id_' + prefix + '-TOTAL_FORMS').val(total);
 
-        let clonedElement = $(selector).after(newElement);
+        let clonedElement = $elementToClone.after(newElement);
 
         $(clonedElement).next().find("select")
             .removeAttr("data-select2-id aria-hidden tabindex")

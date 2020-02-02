@@ -26,8 +26,8 @@
                             <div class="col-6 card">
                                 <div class="form-check form-check-primary calculate-service-time" >
                                     <label class="form-check-label">
-                                    <input type="checkbox" class="form-check-input" checked data-mins="{{service.duration_mins}}" data-service="{{service.name}}">
-                                    {% trans service.name %} ({{service.price}} TL, {{service.duration_mins}} {% trans "mins" %})
+                                    <input type="checkbox" class="form-check-input" checked data-mins="{{service.duration_mins}}" data-service="{{service.service.name}}">
+                                     {{ service.service.name }} ({{service.price}} TL, {{service.duration_mins}} {% trans "mins" %})
                                     <i class="input-helper"></i></label>
                                 </div>
                             </div>

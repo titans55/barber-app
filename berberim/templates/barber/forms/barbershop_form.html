@@ -10,6 +10,12 @@
     {{barbershop_form.address_lng}}
 </div>
 <div class="form-group">
+    <div class="row justify-content-center mb-3">
+        <a href="{% url 'user-settings-add-photo' %}" type="button" class="button btn btn-primary">
+            <i class="fas fa-plus-circle"></i>
+            {% trans 'Add photos of your barbershop' %}
+        </a>
+    </div>
     {{barbershop_form.about.label}}
     {{barbershop_form.about}}
 </div>

@@ -4,7 +4,8 @@ from django.shortcuts import render
 from django.http import HttpResponseNotFound, JsonResponse
 from django.shortcuts import redirect, HttpResponse
 
-from .models import UserType, Barbershop, BarbershopSchedule, Province, District, Review, BarbershopImage
+from .models import UserType, Barbershop, BarbershopSchedule, Province, District, Review, BarbershopImage,\
+    Service
 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -165,24 +166,48 @@ class user_settings_view(View):
     @method_decorator(login_required)
     def get(self, request):
         user = request.user
-
+        barbershop_active_services = []
+        services = [
+            {
+                "pk": srv.pk,
+                "name": srv.name,
+                "is_active": False
+            } for srv in Service.objects.all()
+        ]
         if 'barber' == str(user.user_type):
             if not Barbershop.objects.filter(owner=user).exists():
                 form, employee_formset, barbershop_services_formset, extra = self._init_forms_and_extra()
                 return render(
                     request,
                     str(user.user_type) + '/settings.html',
-                    {'user': user, 'barbershop_form': form, 'extra': extra}
+                    {
+                        'user': user,
+                        'barbershop_form': form,
+                        'extra': extra,
+                        'services': services,
+                        'barbershop_active_services': barbershop_active_services
+                    }
                 )
-
+            else: 
+                barbershop_active_services = Barbershop.objects.filter(owner=user).first().active_services
+                for srv in services:
+                    if srv['pk'] in (bas.pk for bas in barbershop_active_services):
+                        srv['is_active'] = True
 
             form, employee_formset, barbershop_services_formset, extra = self._init_forms_and_extra()
             # print(barbershop_services_formset)
             return render(
                 request,
                 str(user.user_type) + '/settings.html',
-                {'user': user, 'barbershop_form': form, 'employee_formset': employee_formset,
-                'barbershop_services_formset':barbershop_services_formset, 'extra': extra}
+                {
+                    'user': user,
+                    'barbershop_form': form,
+                    'employee_formset': employee_formset,
+                    'barbershop_services_formset':barbershop_services_formset,
+                    'extra': extra,
+                    'services': services,
+                    'barbershop_active_services': barbershop_active_services
+                }
             )
         else:
             pass

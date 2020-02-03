@@ -59,6 +59,7 @@
         cursor:pointer;
     }
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@riophae/vue-treeselect@^0.4.0/dist/vue-treeselect.min.css">
 {% endblock %}
 
 {% block content %}
@@ -104,43 +105,53 @@
                             </div>
                             {% endif %}
                             {% if barbershop_services_formset %}
-                                <h4 class="card-title">{% trans "Services" %}</h4>
-                                <div class="form-group">
-                                    <table class="table text-center">
-                                        <thead>
-                                            <tr class="row">
-                                                <th class="col">{% trans 'Service name' %}</th>
-                                                <th class="col">{% trans 'Price' %}</th>
-                                                <th class="col">{% trans 'Duration(minutes)' %}</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                    <fieldset>
-                                        {{ barbershop_services_formset.management_form }}
-                                        {% for form in barbershop_services_formset %}
-                                        <div class="form-inline form-row justify-content-center">
-                                            <div class="barbershop_services d-none">{{form.id}}</div>
-                                            {% comment %} <input type="text" value="{% trans form.service__name.value %}" class="form-control text-center" readonly>    {% endcomment %}
-                                            <div class="input-group">
-                                                {{ form.service }}
-                                            </div>
-                                            <div class="input-group">
-                                                {{ form.price }}  
-                                                <div class="input-group-append">
-                                                    <span class="input-group-text">TL</span>
+                                <h4 class="card-title">
+                                    {% trans "Services" %}
+                                </h4>
+                                <div id="vue-app">
+                                    <div class="form-group">
+                                        <treeselect 
+                                        v-model="value"
+                                        allowClearingDisabled="false"
+                                        :multiple="true"
+                                        :options="options"></treeselect>
+
+                                        <table class="table text-center">
+                                            <thead>
+                                                <tr class="row">
+                                                    <th class="col">{% trans 'Service name' %}</th>
+                                                    <th class="col">{% trans 'Price' %}</th>
+                                                    <th class="col">{% trans 'Duration(minutes)' %}</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                        <fieldset>
+                                            {{ barbershop_services_formset.management_form }}
+                                            {% for form in barbershop_services_formset %}
+                                            <div class="form-inline form-row justify-content-center">
+                                                <div class="barbershop_services d-none">{{form.id}}</div>
+                                                {% comment %} <input type="text" value="{% trans form.service__name.value %}" class="form-control text-center" readonly>    {% endcomment %}
+                                                <div class="input-group">
+                                                    {{ form.service }}
                                                 </div>
+                                                <div class="input-group">
+                                                    {{ form.price }}  
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">TL</span>
+                                                    </div>
+                                                </div>
+                                                {{ form.duration_mins }}
+                                                
+                                                {{ form.errors }}
                                             </div>
-                                            {{ form.duration_mins }}
-                                            
-                                            {{ form.errors }}
-                                        </div>
-                                        {% endfor %}
-                                        <!-- <input type="submit" name="action" value="+" class="btn btn-success float-right mr-2"> -->
-                                        <button id="add-barbershopservice-form-row" class="btn btn-primary float-right mr-4">+</button>
-                                    </fieldset>
+                                            {% endfor %}
+                                            <!-- <input type="submit" name="action" value="+" class="btn btn-success float-right mr-2"> -->
+                                            <button id="add-barbershopservice-form-row" class="btn btn-primary float-right mr-4">+</button>
+                                        </fieldset>
+                                    </div>
                                 </div>
+
                             {% endif %}
-                            {% lorem 5 b random %}
                         </div>
                     </div>
                 {% endif %}
@@ -169,6 +180,8 @@
 {% endblock %}
 
 {% block footerjs %}
+<script src="https://cdn.jsdelivr.net/npm/vue@^2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@riophae/vue-treeselect@^0.4.0/dist/vue-treeselect.umd.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{GOOGLE_MAPS_API_KEY}}&callback=initMap" async defer></script>
 <script>
     var map;
@@ -204,7 +217,7 @@
         });
 
         initProvinceChange()        
-
+        initVueTreeselect()
     })
 
 
@@ -307,6 +320,32 @@
         //fill the coords field 
         $("#id_address_lat").val(mapCenter.lat().toFixed(6))
         $("#id_address_lng").val(mapCenter.lng().toFixed(6))
+    }
+    var vueApp;
+    function initVueTreeselect(){
+        Vue.component('treeselect', VueTreeselect.Treeselect)
+
+        vueApp = new Vue({
+            el: '#vue-app',
+            data: {
+                // define the default value
+                value: [ 
+                    {% for active_service in barbershop_active_services %}
+                        {{ active_service.pk }},
+                    {% endfor %}
+                ],
+                // define options
+                options: [
+                    {% for srv in services %}
+                    {
+                        id: {{ srv.pk }},
+                        label: "{{ srv.name }}",
+                        isDisabled: {% if srv.is_active %} true {% else %} false {% endif %}
+                    },
+                    {% endfor %}
+                ],
+            },
+        })
     }
 
 </script>

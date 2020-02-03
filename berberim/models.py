@@ -142,6 +142,12 @@ class Barbershop(models.Model):
        'berberim.Address',
         on_delete=models.CASCADE, related_name="barbershops_2", null=True, blank=True
     )
+
+    @property
+    def active_services(self):
+        return [brb_srv.service for brb_srv in self.services.all()]
+
+
     def set_new_review_rate(self, incoming_rate):
         crc = self.customer_reviews.count()
         if crc == 0: crc = 1

@@ -260,12 +260,26 @@ class user_settings_view(View):
                     else:
                         pass
                         # create data
-                
+        barbershop_active_services = Barbershop.objects.filter(owner=user).first().active_services
+        services = [
+            {
+                "pk": srv.pk,
+                "name": srv.name,
+                "is_active": True if srv.pk in (bas.pk for bas in barbershop_active_services) else False
+            } for srv in Service.objects.all()
+        ]
         return render(
             request,
             str(user.user_type) + '/settings.html',
-            {'user': user, 'barbershop_form': form, 'employee_formset': employee_formset,
-            'barbershop_services_formset':barbershop_services_formset, 'extra':extra}
+            {
+                'user': user,
+                'barbershop_form': form,
+                'employee_formset': employee_formset,
+                'barbershop_services_formset': barbershop_services_formset,
+                'barbershop_active_services': barbershop_active_services,
+                'services': services,
+                'extra':extra
+            }
         )
 
     def _get_barbershop_user_settings_form_initial_data(self, barbershop):

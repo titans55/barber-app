@@ -58,12 +58,16 @@
         width:20px;
         cursor:pointer;
     }
+
+    .serviceSelectInputGroup .select2-selection__arrow{
+        display: none;
+    }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@riophae/vue-treeselect@^0.4.0/dist/vue-treeselect.min.css">
 {% endblock %}
 
 {% block content %}
-<form class="" method="post" action="{{ action }}" enctype="multipart/form-data">
+<form class="" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="row">
         <div class="card col-md-12 grid-margin stretch-card">
@@ -115,7 +119,6 @@
                                         allowClearingDisabled="false"
                                         :multiple="true"
                                         :options="options"></treeselect>
-
                                         <table class="table text-center">
                                             <thead>
                                                 <tr class="row">
@@ -126,15 +129,18 @@
                                             </thead>
                                         </table>
                                         <fieldset>
-                                            {{ barbershop_services_formset.management_form }}
+                                            <input type="hidden" name="barbershop_services-TOTAL_FORMS" v-model="servicesFormset.total_form_count" id="id_barbershop_services-TOTAL_FORMS">
+                                            <input type="hidden" name="barbershop_services-INITIAL_FORMS" v-model="servicesFormset.initial_form_count" id="id_barbershop_services-INITIAL_FORMS">
+                                            <input type="hidden" name="barbershop_services-MIN_NUM_FORMS" value="0" id="id_barbershop_services-MIN_NUM_FORMS">
+                                            <input type="hidden" name="barbershop_services-MAX_NUM_FORMS" value="1000" id="id_barbershop_services-MAX_NUM_FORMS">
                                             {% for form in barbershop_services_formset %}
-                                            <div class="form-inline form-row justify-content-center">
+                                            <div class="form-inline form-row justify-content-center w-100">
                                                 <div class="barbershop_services d-none">{{form.id}}</div>
                                                 {% comment %} <input type="text" value="{% trans form.service__name.value %}" class="form-control text-center" readonly>    {% endcomment %}
-                                                <div class="input-group">
+                                                <div class="input-group mt-1 serviceSelectInputGroup" style="width: 33%">
                                                     {{ form.service }}
                                                 </div>
-                                                <div class="input-group">
+                                                <div class="input-group mr-2">
                                                     {{ form.price }}  
                                                     <div class="input-group-append">
                                                         <span class="input-group-text">TL</span>
@@ -145,8 +151,21 @@
                                                 {{ form.errors }}
                                             </div>
                                             {% endfor %}
+                                            <div class="form-inline form-row justify-content-center w-100" v-for="(addedServiceID, index) in addedServices()">
+                                                <div class="input-group mt-1 serviceSelectInputGroup" style="width: 33%">
+                                                    <select :name="'barbershop_services-'+ (value.length-addedServices().length+index) +'-service'" readonly="readonly" :id="'id_barbershop_services-'+ (value.length-addedServices().length+index) +'-service'" :data-select2-id="'barbershop_services-'+ (value.length-addedServices().length+index) +'-service'" tabindex="-1" aria-hidden="true" class="form-control text-center init-select2">
+                                                        <option :value="addedServiceID" selected="selected">[[findServiceByID(addedServiceID).label]]</option>
+                                                    </select>
+                                                </div>
+                                                <div class="input-group mr-2">
+                                                    <input type="number" :name="'barbershop_services-'+ (value.length-addedServices().length+index) +'-price'" value="10" :id="'id_barbershop_services-'+ (value.length-addedServices().length+index) +'-price'" class="form-control text-center">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">TL</span>
+                                                    </div>
+                                                </div>
+                                                <input type="number" :name="'barbershop_services-'+ (value.length-addedServices().length+index) +'-duration_mins'" value="20" :id="'id_barbershop_services-'+ (value.length-addedServices().length+index) +'-duration_mins'" class="form-control text-center">
+                                            </div>
                                             <!-- <input type="submit" name="action" value="+" class="btn btn-success float-right mr-2"> -->
-                                            <button id="add-barbershopservice-form-row" class="btn btn-primary float-right mr-4">+</button>
                                         </fieldset>
                                     </div>
                                 </div>
@@ -220,6 +239,12 @@
         initVueTreeselect()
     })
 
+    function removeSelectHover(){
+        $('.select2-selection__rendered').hover(function () {
+            $(this).removeAttr('title');
+        });
+    }
+
 
     //dynamically add form--
 
@@ -263,6 +288,33 @@
 
         return false;
     }
+    function cloneWithVue(oldTotal, $elementToClone, prefix){
+        let newElement = $elementToClone.clone(true);
+        let selectTagID
+        newElement.find('select, input:not([type=button]):not([type=submit]):not([type=reset])').each(function() {
+            console.log($(this))
+            let name = $(this).attr('name').replace('-' + (oldTotal-1) + '-', '-' + oldTotal + '-');
+            let id = 'id_' + name;
+            if($(this).prop("tagName")=='SELECT') selectTagID = id
+            $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+        });
+        $('#id_' + prefix + '-TOTAL_FORMS').val(oldTotal+1);
+
+        let clonedElement = $elementToClone.after(newElement);
+
+        $(clonedElement).next().find("select")
+            .removeAttr("data-select2-id aria-hidden tabindex")
+            .removeClass("select2-hidden-accessible")
+            .val("Master")
+                .siblings("span").remove()
+
+        $(clonedElement).next().find(".employee_id_input").remove()
+        if($(clonedElement).next().find(".errorlist").length)$(clonedElement).next().find(".errorlist").remove()
+   
+
+        return false;
+    }
+
     function deleteForm(prefix, btn) {
         var total = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
         if (total > 1){
@@ -327,6 +379,7 @@
 
         vueApp = new Vue({
             el: '#vue-app',
+            delimiters: ['[[', ']]'],
             data: {
                 // define the default value
                 value: [ 
@@ -344,7 +397,24 @@
                     },
                     {% endfor %}
                 ],
+                servicesFormset: {
+                    total_form_count: {{barbershop_services_formset.total_form_count}},
+                    initial_form_count: {{barbershop_services_formset.initial_form_count}}
+                }
             },
+            methods: {
+                addedServices(){
+                    const addedServices = this.value.filter(value => -1 !== this.options.filter(option=>option.isDisabled==false).map(option=>option.id).indexOf(value))
+                    if(addedServices.length>0){
+                        this.servicesFormset.total_form_count = this.value.length                        
+                    }
+                    removeSelectHover()
+                    return addedServices
+                },
+                findServiceByID(id){
+                    return this.options.find(option => option.id === id)
+                }
+            }
         })
     }
 

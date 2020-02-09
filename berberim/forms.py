@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User, UserType, Barbershop, BarbershopEmployee, EMPLOYEE_TITLES_CHOICES,\
-    SERVICE_NAME_CHOICES, Address, BarbershopService, Country, Province, District, BarbershopImage
+    SERVICE_NAME_CHOICES, Address, BarbershopService, Country, Province, District, BarbershopImage,\
+    Service
 from django.utils.translation import gettext as _
 import re
 from django.core.validators import RegexValidator
@@ -289,11 +290,17 @@ class EmployeeForm(forms.ModelForm):
 class BarbershopServiceForm(forms.ModelForm):
     id = forms.IntegerField(
         widget= forms.NumberInput(attrs={'class':'d-none', 'readonly':'readonly'}),
-        disabled=True
+        disabled=True,
+        required=False #so we can create service
     )
-    service = forms.ChoiceField(
-        widget=forms.TextInput(attrs={'class':'form-control text-center', 'readonly':'readonly'}),
-        disabled=True
+    service = forms.ModelChoiceField(
+        widget=forms.Select(
+            attrs={
+                'class':'init-select2 form-control text-center',
+                'readonly': 'readonly'
+            }
+        ),
+        queryset=Service.objects.all(),
     )
     price = forms.IntegerField(
         widget=forms.NumberInput(attrs={'class':'form-control text-center'})
@@ -307,13 +314,25 @@ class BarbershopServiceForm(forms.ModelForm):
 
     def save(self, barbershop):
         try:
+            if self.cleaned_data['id'] is None:
+                raise(BarbershopService.DoesNotExist)
+
             barbershop_service = BarbershopService.objects.filter(
                 id=self.cleaned_data['id'],
             ).update(**self.cleaned_data)
 
             return barbershop_service
-        except Exception as err:
-            raise(err)
+        except BarbershopService.DoesNotExist as err:
+            if BarbershopService.objects.filter(barbershop=barbershop, service_id=self.cleaned_data['service']).exists():
+                raise Exception("Service for that barbershop is already exists")
+
+            barbershop_service = BarbershopService.objects.create(
+                service=self.cleaned_data['service'],
+                price=self.cleaned_data['price'],
+                duration_mins=self.cleaned_data['duration_mins'],
+                barbershop=barbershop
+            )
+            return barbershop_service
 
 class BarbershopImageForm(forms.ModelForm):
     class Meta:

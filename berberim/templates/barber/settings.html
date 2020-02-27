@@ -413,7 +413,7 @@
     }
     var vueApp;
 
-    function initVueTreeselect() {
+    function initVueTreeselect(){
         Vue.component('treeselect', VueTreeselect.Treeselect)
 
         vueApp = new Vue({
@@ -421,69 +421,36 @@
             delimiters: ['[[', ']]'],
             data: {
                 // define the default value
-                value: [{
-                        %
-                        for active_service in barbershop_active_services %
-                    } {
-                        {
-                            active_service.pk
-                        }
-                    },
-                    {
-                        % endfor %
-                    }
+                value: [ 
+                    {% for active_service in barbershop_active_services %}
+                        {{ active_service.pk }},
+                    {% endfor %}
                 ],
                 // define options
-                options: [{
-                        %
-                        for srv in services %
-                    } {
-                        id: {
-                            {
-                                srv.pk
-                            }
-                        },
-                        label: "{{ srv.name }}",
-                        isDisabled: {
-                            %
-                            if srv.is_active %
-                        }
-                        true {
-                            %
-                            else %
-                        }
-                        false {
-                            % endif %
-                        }
-                    },
+                options: [
+                    {% for srv in services %}
                     {
-                        % endfor %
-                    }
+                        id: {{ srv.pk }},
+                        label: "{{ srv.name }}",
+                        isDisabled: {% if srv.is_active %} true {% else %} false {% endif %}
+                    },
+                    {% endfor %}
                 ],
                 servicesFormset: {
-                    total_form_count: {
-                        {
-                            barbershop_services_formset.total_form_count
-                        }
-                    },
-                    initial_form_count: {
-                        {
-                            barbershop_services_formset.initial_form_count
-                        }
-                    }
+                    total_form_count: {{barbershop_services_formset.total_form_count}},
+                    initial_form_count: {{barbershop_services_formset.initial_form_count}}
                 }
             },
             methods: {
-                addedServices() {
-                    const addedServices = this.value.filter(value => -1 !== this.options.filter(option => option
-                        .isDisabled == false).map(option => option.id).indexOf(value))
-                    if (addedServices.length > 0) {
-                        this.servicesFormset.total_form_count = this.value.length
+                addedServices(){
+                    const addedServices = this.value.filter(value => -1 !== this.options.filter(option=>option.isDisabled==false).map(option=>option.id).indexOf(value))
+                    if(addedServices.length>0){
+                        this.servicesFormset.total_form_count = this.value.length                        
                     }
                     removeSelectHover()
                     return addedServices
                 },
-                findServiceByID(id) {
+                findServiceByID(id){
                     return this.options.find(option => option.id === id)
                 }
             }

@@ -36,7 +36,7 @@
                     </div>
                     <div class="col"></div>
                 </div>
-                <div id="container"></div>
+                <div id="scheduler"></div>
                 <div class="row">
                     <div class="col">
                         <form action="{% url 'barbershop' barbershop_slug=barbershop.slug%}" method="post">
@@ -70,8 +70,8 @@
     <script type="text/javascript" src="{% static 'assets/jquery-sked-tape-master/dist/jquery.skedTape.js' %}"></script>    
     <script>
         $(function(){
-            var createdEvent = false
-            var $sked = initScheduler()
+            let createdEvent = false
+            let $sked = initScheduler()
             let employeesData = $("#barbershop-employees").attr("data")
             for(employee in employeesData){
                 console.log(employee.full_name)
@@ -115,7 +115,7 @@
         })
 
         function initScheduler(){
-            return $('#container').skedTape({
+            return $('#scheduler').skedTape({
                 caption: 'Employees',
                 start: today(10, 0), // Timeline starts this date-time (UTC)
                 end: today(20, 0),       // Timeline ends this date-time (UTC)

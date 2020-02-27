@@ -1,5 +1,16 @@
 {
     "python.pythonPath": "C:\\Users\\Administrator\\envs\\virtualbros\\Scripts\\python.exe",
     "python.linting.pycodestyleEnabled": false,
-    "python.linting.pylintEnabled": false
+    "python.linting.pylintEnabled": false,
+    "beautify.language": {
+        "js": {
+            "type": ["javascript", "json"],
+            "filename": [".jshintrc", ".jsbeautifyrc"]
+            // "ext": ["js", "json"]
+            // ^^ to set extensions to be beautified using the javascript beautifier
+        },
+        "css": ["css", "scss"],
+        "html": ["htm", "html", "django-html"]
+        // ^^ providing just an array sets the VS Code file type
+    }
 }

@@ -8,15 +8,18 @@
     .select2-selection__rendered {
         line-height: 43px !important;
     }
+
     .select2-container .select2-selection--single {
         height: 47px !important;
     }
+
     .select2-selection__arrow {
         height: 46px !important;
     }
+
     span.select2.select2-container.select2-container {
-        margin-bottom: 5px!important;
-        margin-right: 1vh!important;
+        margin-bottom: 5px !important;
+        margin-right: 1vh !important;
     }
 
 
@@ -24,7 +27,7 @@
         position: fixed;
         bottom: 4vh;
         width: 100%;
-        left:0;
+        left: 0;
     }
 
     .floating-button {
@@ -32,7 +35,6 @@
         height: 5vh;
         box-sizing: border-box;
     }
-
 </style>
 
 <style>
@@ -42,24 +44,25 @@
         height: 30vh;
     }
 
-    .centerMarker{
-        position:absolute;
+    .centerMarker {
+        position: absolute;
         /*url of the marker*/
-        background:url(http://maps.gstatic.com/mapfiles/markers2/marker.png) no-repeat;
+        background: url(http://maps.gstatic.com/mapfiles/markers2/marker.png) no-repeat;
         /*center the marker*/
-        top:50%;left:50%;
+        top: 50%;
+        left: 50%;
 
-        z-index:1;
+        z-index: 1;
         /*fix offset when needed*/
-        margin-left:-10px;
-        margin-top:-34px;
+        margin-left: -10px;
+        margin-top: -34px;
         /*size of the image*/
-        height:34px;
-        width:20px;
-        cursor:pointer;
+        height: 34px;
+        width: 20px;
+        cursor: pointer;
     }
 
-    .serviceSelectInputGroup .select2-selection__arrow{
+    .serviceSelectInputGroup .select2-selection__arrow {
         display: none;
     }
 </style>
@@ -72,107 +75,127 @@
     <div class="row">
         <div class="card col-md-12 grid-margin stretch-card">
             <div class="row">
-                {% if not user.barbershops.all.exists %} 
+                {% if not user.barbershops.all.exists %}
+                <div class="card-body text-center">
+                    <h4 class="card-title">{% trans "Barbershop Settings" %}</h4>
+                    {% include "barber/forms/barbershop_form.html" with barbershop_form=barbershop_form %}
+                </div>
+                {% else %}
+                <div class="col-md-6 grid-margin stretch-card mb-0">
                     <div class="card-body text-center">
                         <h4 class="card-title">{% trans "Barbershop Settings" %}</h4>
                         {% include "barber/forms/barbershop_form.html" with barbershop_form=barbershop_form %}
                     </div>
-                {% else %} 
-                    <div class="col-md-6 grid-margin stretch-card mb-0">
-                        <div class="card-body text-center">
-                            <h4 class="card-title">{% trans "Barbershop Settings" %}</h4>
-                            {% include "barber/forms/barbershop_form.html" with barbershop_form=barbershop_form %}
+                </div>
+                <div class="col-md-6 grid-margin stretch-card mb-0">
+
+                    <div class="card-body text-center">
+                        {% if employee_formset %}
+
+                        <h4 class="card-title">{% trans "Employees" %}</h4>
+                        <input id="extra" type="hidden" name="extra" value="{{extra}}">
+                        <div class="form-group">
+                            <fieldset>
+                                {{ employee_formset.management_form }}
+                                {% for form in employee_formset %}
+                                <div class="form-inline form-row">
+                                    <div class="employee_id_input d-none">{{form.id}}</div>
+                                    {{ form.title }}
+                                    {{ form.name }}
+                                    {{ form.surname }}
+                                    {{ form.errors }}
+                                </div>
+                                {% endfor %}
+                                <!-- <input type="submit" name="action" value="+" class="btn btn-success float-right mr-2"> -->
+                                <button id="add-employee-form-row" class="btn btn-primary float-right mr-4">+</button>
+                            </fieldset>
                         </div>
-                    </div>
-                    <div class="col-md-6 grid-margin stretch-card mb-0">
-    
-                        <div class="card-body text-center">
-                            {% if employee_formset %}
-    
-                            <h4 class="card-title">{% trans "Employees" %}</h4>
-                            <input id="extra" type="hidden" name="extra" value="{{extra}}">
+                        {% endif %}
+                        {% if barbershop_services_formset %}
+                        <h4 class="card-title">
+                            {% trans "Services" %}
+                        </h4>
+                        <div id="vue-app">
                             <div class="form-group">
+                                <treeselect v-model="value" allowClearingDisabled="false" :multiple="true"
+                                    :options="options"></treeselect>
+                                <table class="table text-center">
+                                    <thead>
+                                        <tr class="row">
+                                            <th class="col">{% trans 'Service name' %}</th>
+                                            <th class="col">{% trans 'Price' %}</th>
+                                            <th class="col">{% trans 'Duration(minutes)' %}</th>
+                                        </tr>
+                                    </thead>
+                                </table>
                                 <fieldset>
-                                    {{ employee_formset.management_form }}
-                                    {% for form in employee_formset %}
-                                    <div class="form-inline form-row">
-                                        <div class="employee_id_input d-none">{{form.id}}</div>
-                                        {{ form.title }}
-                                        {{ form.name }}                                    
-                                        {{ form.surname }}
+                                    <input type="hidden" name="barbershop_services-TOTAL_FORMS"
+                                        v-model="servicesFormset.total_form_count"
+                                        id="id_barbershop_services-TOTAL_FORMS">
+                                    <input type="hidden" name="barbershop_services-INITIAL_FORMS"
+                                        v-model="servicesFormset.initial_form_count"
+                                        id="id_barbershop_services-INITIAL_FORMS">
+                                    <input type="hidden" name="barbershop_services-MIN_NUM_FORMS" value="0"
+                                        id="id_barbershop_services-MIN_NUM_FORMS">
+                                    <input type="hidden" name="barbershop_services-MAX_NUM_FORMS" value="1000"
+                                        id="id_barbershop_services-MAX_NUM_FORMS">
+                                    {% for form in barbershop_services_formset %}
+                                    <div class="form-inline form-row justify-content-center w-100">
+                                        <div class="barbershop_services d-none">{{form.id}}</div>
+                                        {% comment %} <input type="text" value="{% trans form.service__name.value %}"
+                                            class="form-control text-center" readonly> {% endcomment %}
+                                        <div class="input-group mt-1 serviceSelectInputGroup" style="width: 33%">
+                                            {{ form.service }}
+                                        </div>
+                                        <div class="input-group mr-2">
+                                            {{ form.price }}
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">TL</span>
+                                            </div>
+                                        </div>
+                                        {{ form.duration_mins }}
+
                                         {{ form.errors }}
                                     </div>
                                     {% endfor %}
+                                    <div class="form-inline form-row justify-content-center w-100"
+                                        v-for="(addedServiceID, index) in addedServices()">
+                                        <div class="input-group mt-1 serviceSelectInputGroup" style="width: 33%">
+                                            <select
+                                                :name="'barbershop_services-'+ (value.length-addedServices().length+index) +'-service'"
+                                                readonly="readonly"
+                                                :id="'id_barbershop_services-'+ (value.length-addedServices().length+index) +'-service'"
+                                                :data-select2-id="'barbershop_services-'+ (value.length-addedServices().length+index) +'-service'"
+                                                tabindex="-1" aria-hidden="true"
+                                                class="form-control text-center init-select2">
+                                                <option :value="addedServiceID" selected="selected">
+                                                    [[findServiceByID(addedServiceID).label]]</option>
+                                            </select>
+                                        </div>
+                                        <div class="input-group mr-2">
+                                            <input type="number"
+                                                :name="'barbershop_services-'+ (value.length-addedServices().length+index) +'-price'"
+                                                value="10"
+                                                :id="'id_barbershop_services-'+ (value.length-addedServices().length+index) +'-price'"
+                                                class="form-control text-center">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">TL</span>
+                                            </div>
+                                        </div>
+                                        <input type="number"
+                                            :name="'barbershop_services-'+ (value.length-addedServices().length+index) +'-duration_mins'"
+                                            value="20"
+                                            :id="'id_barbershop_services-'+ (value.length-addedServices().length+index) +'-duration_mins'"
+                                            class="form-control text-center">
+                                    </div>
                                     <!-- <input type="submit" name="action" value="+" class="btn btn-success float-right mr-2"> -->
-                                    <button id="add-employee-form-row" class="btn btn-primary float-right mr-4">+</button>
                                 </fieldset>
                             </div>
-                            {% endif %}
-                            {% if barbershop_services_formset %}
-                                <h4 class="card-title">
-                                    {% trans "Services" %}
-                                </h4>
-                                <div id="vue-app">
-                                    <div class="form-group">
-                                        <treeselect 
-                                        v-model="value"
-                                        allowClearingDisabled="false"
-                                        :multiple="true"
-                                        :options="options"></treeselect>
-                                        <table class="table text-center">
-                                            <thead>
-                                                <tr class="row">
-                                                    <th class="col">{% trans 'Service name' %}</th>
-                                                    <th class="col">{% trans 'Price' %}</th>
-                                                    <th class="col">{% trans 'Duration(minutes)' %}</th>
-                                                </tr>
-                                            </thead>
-                                        </table>
-                                        <fieldset>
-                                            <input type="hidden" name="barbershop_services-TOTAL_FORMS" v-model="servicesFormset.total_form_count" id="id_barbershop_services-TOTAL_FORMS">
-                                            <input type="hidden" name="barbershop_services-INITIAL_FORMS" v-model="servicesFormset.initial_form_count" id="id_barbershop_services-INITIAL_FORMS">
-                                            <input type="hidden" name="barbershop_services-MIN_NUM_FORMS" value="0" id="id_barbershop_services-MIN_NUM_FORMS">
-                                            <input type="hidden" name="barbershop_services-MAX_NUM_FORMS" value="1000" id="id_barbershop_services-MAX_NUM_FORMS">
-                                            {% for form in barbershop_services_formset %}
-                                            <div class="form-inline form-row justify-content-center w-100">
-                                                <div class="barbershop_services d-none">{{form.id}}</div>
-                                                {% comment %} <input type="text" value="{% trans form.service__name.value %}" class="form-control text-center" readonly>    {% endcomment %}
-                                                <div class="input-group mt-1 serviceSelectInputGroup" style="width: 33%">
-                                                    {{ form.service }}
-                                                </div>
-                                                <div class="input-group mr-2">
-                                                    {{ form.price }}  
-                                                    <div class="input-group-append">
-                                                        <span class="input-group-text">TL</span>
-                                                    </div>
-                                                </div>
-                                                {{ form.duration_mins }}
-                                                
-                                                {{ form.errors }}
-                                            </div>
-                                            {% endfor %}
-                                            <div class="form-inline form-row justify-content-center w-100" v-for="(addedServiceID, index) in addedServices()">
-                                                <div class="input-group mt-1 serviceSelectInputGroup" style="width: 33%">
-                                                    <select :name="'barbershop_services-'+ (value.length-addedServices().length+index) +'-service'" readonly="readonly" :id="'id_barbershop_services-'+ (value.length-addedServices().length+index) +'-service'" :data-select2-id="'barbershop_services-'+ (value.length-addedServices().length+index) +'-service'" tabindex="-1" aria-hidden="true" class="form-control text-center init-select2">
-                                                        <option :value="addedServiceID" selected="selected">[[findServiceByID(addedServiceID).label]]</option>
-                                                    </select>
-                                                </div>
-                                                <div class="input-group mr-2">
-                                                    <input type="number" :name="'barbershop_services-'+ (value.length-addedServices().length+index) +'-price'" value="10" :id="'id_barbershop_services-'+ (value.length-addedServices().length+index) +'-price'" class="form-control text-center">
-                                                    <div class="input-group-append">
-                                                        <span class="input-group-text">TL</span>
-                                                    </div>
-                                                </div>
-                                                <input type="number" :name="'barbershop_services-'+ (value.length-addedServices().length+index) +'-duration_mins'" value="20" :id="'id_barbershop_services-'+ (value.length-addedServices().length+index) +'-duration_mins'" class="form-control text-center">
-                                            </div>
-                                            <!-- <input type="submit" name="action" value="+" class="btn btn-success float-right mr-2"> -->
-                                        </fieldset>
-                                    </div>
-                                </div>
-
-                            {% endif %}
                         </div>
+
+                        {% endif %}
                     </div>
+                </div>
                 {% endif %}
             </div>
         </div>
@@ -182,13 +205,13 @@
             <div class="col-md-5"></div>
             <div class="col-md-2">
                 {% if not edit%}
-                    <button  type="submit" name="action" value="Create" class="floating-button btn btn-primary w-100">
-                        {% trans 'Save' %}
-                    </button>        
+                <button type="submit" name="action" value="Create" class="floating-button btn btn-primary w-100">
+                    {% trans 'Save' %}
+                </button>
                 {% else %}
-                    <button  type="submit" name="action" value="Edit" class="floating-button btn btn-primary w-100">
-                        {% trans 'Edit' %}
-                    </button>        
+                <button type="submit" name="action" value="Edit" class="floating-button btn btn-primary w-100">
+                    {% trans 'Edit' %}
+                </button>
                 {% endif %}
             </div>
             <div class="col-md-5"></div>
@@ -205,9 +228,9 @@
 <script>
     var map;
     var geocoder;
-    $(()=>{
+    $(() => {
         $('.init-select2').select2();
-        $(document).on('click', '#add-employee-form-row', function(e){
+        $(document).on('click', '#add-employee-form-row', function (e) {
             e.preventDefault();
             $(".init-select2").select2("destroy")
             // $(".init-select2")
@@ -218,7 +241,7 @@
 
             return false;
         });
-        $(document).on('click', '#add-barbershopservice-form-row', function(e){
+        $(document).on('click', '#add-barbershopservice-form-row', function (e) {
             e.preventDefault();
             $(".init-select2").select2("destroy")
             // $(".init-select2")
@@ -229,17 +252,17 @@
 
             return false;
         })
-        $(document).on('click', '.remove-form-row', function(e){
+        $(document).on('click', '.remove-form-row', function (e) {
             e.preventDefault();
             deleteForm('employees', $(this));
             return false;
         });
 
-        initProvinceChange()        
+        initProvinceChange()
         initVueTreeselect()
     })
 
-    function removeSelectHover(){
+    function removeSelectHover() {
         $('.select2-selection__rendered').hover(function () {
             $(this).removeAttr('title');
         });
@@ -255,21 +278,25 @@
         if (el.id) el.id = el.id.replace(id_regex, replacement);
         if (el.name) el.name = el.name.replace(id_regex, replacement);
     }
+
     function cloneMore($elementToClone, prefix) {
-        
+
         let newElement = $elementToClone.clone(true);
         let total = $('#id_' + prefix + '-TOTAL_FORMS').val();
         let selectTagID
-        newElement.find('select, input:not([type=button]):not([type=submit]):not([type=reset])').each(function() {
+        newElement.find('select, input:not([type=button]):not([type=submit]):not([type=reset])').each(function () {
             console.log($(this))
-            if(typeof total === "undefined"){
+            if (typeof total === "undefined") {
                 total = $(".form-row").length
-                $("#id_form-TOTAL_FORMS").val(total+1)
+                $("#id_form-TOTAL_FORMS").val(total + 1)
             }
-            let name = $(this).attr('name').replace('-' + (total-1) + '-', '-' + total + '-');
+            let name = $(this).attr('name').replace('-' + (total - 1) + '-', '-' + total + '-');
             let id = 'id_' + name;
-            if($(this).prop("tagName")=='SELECT') selectTagID = id
-            $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+            if ($(this).prop("tagName") == 'SELECT') selectTagID = id
+            $(this).attr({
+                'name': name,
+                'id': id
+            }).val('').removeAttr('checked');
         });
         total++;
         $('#id_' + prefix + '-TOTAL_FORMS').val(total);
@@ -280,25 +307,29 @@
             .removeAttr("data-select2-id aria-hidden tabindex")
             .removeClass("select2-hidden-accessible")
             .val("Master")
-                .siblings("span").remove()
+            .siblings("span").remove()
 
         $(clonedElement).next().find(".employee_id_input").remove()
-        if($(clonedElement).next().find(".errorlist").length)$(clonedElement).next().find(".errorlist").remove()
-   
+        if ($(clonedElement).next().find(".errorlist").length) $(clonedElement).next().find(".errorlist").remove()
+
 
         return false;
     }
-    function cloneWithVue(oldTotal, $elementToClone, prefix){
+
+    function cloneWithVue(oldTotal, $elementToClone, prefix) {
         let newElement = $elementToClone.clone(true);
         let selectTagID
-        newElement.find('select, input:not([type=button]):not([type=submit]):not([type=reset])').each(function() {
+        newElement.find('select, input:not([type=button]):not([type=submit]):not([type=reset])').each(function () {
             console.log($(this))
-            let name = $(this).attr('name').replace('-' + (oldTotal-1) + '-', '-' + oldTotal + '-');
+            let name = $(this).attr('name').replace('-' + (oldTotal - 1) + '-', '-' + oldTotal + '-');
             let id = 'id_' + name;
-            if($(this).prop("tagName")=='SELECT') selectTagID = id
-            $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+            if ($(this).prop("tagName") == 'SELECT') selectTagID = id
+            $(this).attr({
+                'name': name,
+                'id': id
+            }).val('').removeAttr('checked');
         });
-        $('#id_' + prefix + '-TOTAL_FORMS').val(oldTotal+1);
+        $('#id_' + prefix + '-TOTAL_FORMS').val(oldTotal + 1);
 
         let clonedElement = $elementToClone.after(newElement);
 
@@ -306,23 +337,23 @@
             .removeAttr("data-select2-id aria-hidden tabindex")
             .removeClass("select2-hidden-accessible")
             .val("Master")
-                .siblings("span").remove()
+            .siblings("span").remove()
 
         $(clonedElement).next().find(".employee_id_input").remove()
-        if($(clonedElement).next().find(".errorlist").length)$(clonedElement).next().find(".errorlist").remove()
-   
+        if ($(clonedElement).next().find(".errorlist").length) $(clonedElement).next().find(".errorlist").remove()
+
 
         return false;
     }
 
     function deleteForm(prefix, btn) {
         var total = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
-        if (total > 1){
+        if (total > 1) {
             btn.closest('.form-row').remove();
             var forms = $('.form-row');
             $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
-            for (var i=0, formCount=forms.length; i<formCount; i++) {
-                $(forms.get(i)).find(':input').each(function() {
+            for (var i = 0, formCount = forms.length; i < formCount; i++) {
+                $(forms.get(i)).find(':input').each(function () {
                     updateElementIndex(this, prefix, i);
                 });
             }
@@ -333,20 +364,25 @@
     function initMap() {
         geocoder = new google.maps.Geocoder();
         let lat, lng;
-        if($("#id_address_lat").val()){
+        if ($("#id_address_lat").val()) {
             lat = parseFloat($("#id_address_lat").val())
             lng = parseFloat($("#id_address_lng").val())
-        }else{
+        } else {
             lat = -34.397
             lng = 150.644
         }
         map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: lat, lng: lng},
+            center: {
+                lat: lat,
+                lng: lng
+            },
             zoom: 15,
             fullscreenControl: false,
         });
-        map.setOptions({draggable: true});
-        google.maps.event.addListener(map, 'dragend', function() {
+        map.setOptions({
+            draggable: true
+        });
+        google.maps.event.addListener(map, 'dragend', function () {
             writeCenterOfMapToCoordsForm()
         });
 
@@ -355,7 +391,9 @@
 
     function codeAddress() {
         var address = document.getElementById('address').value;
-        geocoder.geocode( { 'address': address}, function(results, status) {
+        geocoder.geocode({
+            'address': address
+        }, function (results, status) {
             if (status == 'OK') {
                 map.setCenter(results[0].geometry.location);
                 map.setZoom(15);
@@ -366,7 +404,7 @@
         });
     }
 
-    function writeCenterOfMapToCoordsForm(){
+    function writeCenterOfMapToCoordsForm() {
         const mapCenter = map.getCenter()
         console.log("map center = ", mapCenter.lat(), mapCenter.lng())
         //fill the coords field 
@@ -374,7 +412,8 @@
         $("#id_address_lng").val(mapCenter.lng().toFixed(6))
     }
     var vueApp;
-    function initVueTreeselect(){
+
+    function initVueTreeselect() {
         Vue.component('treeselect', VueTreeselect.Treeselect)
 
         vueApp = new Vue({
@@ -382,41 +421,73 @@
             delimiters: ['[[', ']]'],
             data: {
                 // define the default value
-                value: [ 
-                    {% for active_service in barbershop_active_services %}
-                        {{ active_service.pk }},
-                    {% endfor %}
+                value: [{
+                        %
+                        for active_service in barbershop_active_services %
+                    } {
+                        {
+                            active_service.pk
+                        }
+                    },
+                    {
+                        % endfor %
+                    }
                 ],
                 // define options
-                options: [
-                    {% for srv in services %}
-                    {
-                        id: {{ srv.pk }},
+                options: [{
+                        %
+                        for srv in services %
+                    } {
+                        id: {
+                            {
+                                srv.pk
+                            }
+                        },
                         label: "{{ srv.name }}",
-                        isDisabled: {% if srv.is_active %} true {% else %} false {% endif %}
+                        isDisabled: {
+                            %
+                            if srv.is_active %
+                        }
+                        true {
+                            %
+                            else %
+                        }
+                        false {
+                            % endif %
+                        }
                     },
-                    {% endfor %}
+                    {
+                        % endfor %
+                    }
                 ],
                 servicesFormset: {
-                    total_form_count: {{barbershop_services_formset.total_form_count}},
-                    initial_form_count: {{barbershop_services_formset.initial_form_count}}
+                    total_form_count: {
+                        {
+                            barbershop_services_formset.total_form_count
+                        }
+                    },
+                    initial_form_count: {
+                        {
+                            barbershop_services_formset.initial_form_count
+                        }
+                    }
                 }
             },
             methods: {
-                addedServices(){
-                    const addedServices = this.value.filter(value => -1 !== this.options.filter(option=>option.isDisabled==false).map(option=>option.id).indexOf(value))
-                    if(addedServices.length>0){
-                        this.servicesFormset.total_form_count = this.value.length                        
+                addedServices() {
+                    const addedServices = this.value.filter(value => -1 !== this.options.filter(option => option
+                        .isDisabled == false).map(option => option.id).indexOf(value))
+                    if (addedServices.length > 0) {
+                        this.servicesFormset.total_form_count = this.value.length
                     }
                     removeSelectHover()
                     return addedServices
                 },
-                findServiceByID(id){
+                findServiceByID(id) {
                     return this.options.find(option => option.id === id)
                 }
             }
         })
     }
-
 </script>
 {% endblock %}

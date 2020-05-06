@@ -71,8 +71,14 @@ INSTALLED_APPS = [
     'berberim',
     'sass_processor',
     'debug_toolbar',
-    'dynamic_formsets',
+    'corsheaders',
+    'rest_framework',
+    'berberimapi',
 ]
+
+CORS_ORIGIN_WHITELIST = ( 'localhost:8080', )
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

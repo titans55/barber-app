@@ -116,80 +116,111 @@
                             {% trans "Services" %}
                         </h4>
                         <div id="vue-app">
-                            <div class="form-group">
-                                <treeselect v-model="value" allowClearingDisabled="false" :multiple="true"
-                                    :options="options"></treeselect>
+                            <tr class="form-group">
+                                <treeselect 
+                                    v-model="value"
+                                    allowClearingDisabled="false"
+                                    :multiple="true"
+                                    :options="options">
+                                </treeselect>
+                                <input 
+                                    type="hidden" 
+                                    name="barbershop_services-TOTAL_FORMS"
+                                    v-model="servicesFormset.total_form_count"
+                                    id="id_barbershop_services-TOTAL_FORMS"
+                                >
+                                <input 
+                                    type="hidden" 
+                                    name="barbershop_services-INITIAL_FORMS"
+                                    v-model="servicesFormset.initial_form_count"
+                                    id="id_barbershop_services-INITIAL_FORMS"
+                                >
+                                <input
+                                    type="hidden" 
+                                    name="barbershop_services-MIN_NUM_FORMS" 
+                                    value="0"
+                                    id="id_barbershop_services-MIN_NUM_FORMS">
+                                <input 
+                                    type="hidden"
+                                    name="barbershop_services-MAX_NUM_FORMS"
+                                    value="1000"
+                                    id="id_barbershop_services-MAX_NUM_FORMS"
+                                >
                                 <table class="table text-center">
                                     <thead>
-                                        <tr class="row">
-                                            <th class="col">{% trans 'Service name' %}</th>
-                                            <th class="col">{% trans 'Price' %}</th>
-                                            <th class="col">{% trans 'Duration(minutes)' %}</th>
+                                        <tr>
+                                            <th>{% trans 'Service name' %}</th>
+                                            <th>{% trans 'Price' %}</th>
+                                            <th>{% trans 'Duration(minutes)' %}</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
-                                </table>
-                                <fieldset>
-                                    <input type="hidden" name="barbershop_services-TOTAL_FORMS"
-                                        v-model="servicesFormset.total_form_count"
-                                        id="id_barbershop_services-TOTAL_FORMS">
-                                    <input type="hidden" name="barbershop_services-INITIAL_FORMS"
-                                        v-model="servicesFormset.initial_form_count"
-                                        id="id_barbershop_services-INITIAL_FORMS">
-                                    <input type="hidden" name="barbershop_services-MIN_NUM_FORMS" value="0"
-                                        id="id_barbershop_services-MIN_NUM_FORMS">
-                                    <input type="hidden" name="barbershop_services-MAX_NUM_FORMS" value="1000"
-                                        id="id_barbershop_services-MAX_NUM_FORMS">
-                                    {% for form in barbershop_services_formset %}
-                                    <div class="form-inline form-row justify-content-center w-100">
-                                        <div class="barbershop_services d-none">{{form.id}}</div>
-                                        {% comment %} <input type="text" value="{% trans form.service__name.value %}"
-                                            class="form-control text-center" readonly> {% endcomment %}
-                                        <div class="input-group mt-1 serviceSelectInputGroup" style="width: 33%">
-                                            {{ form.service }}
-                                        </div>
-                                        <div class="input-group mr-2">
-                                            {{ form.price }}
-                                            <div class="input-group-append">
-                                                <span class="input-group-text">TL</span>
-                                            </div>
-                                        </div>
-                                        {{ form.duration_mins }}
-
-                                        {{ form.errors }}
-                                    </div>
-                                    {% endfor %}
-                                    <div class="form-inline form-row justify-content-center w-100"
-                                        v-for="(addedServiceID, index) in addedServices()">
-                                        <div class="input-group mt-1 serviceSelectInputGroup" style="width: 33%">
-                                            <select
-                                                :name="'barbershop_services-'+ (value.length-addedServices().length+index) +'-service'"
-                                                readonly="readonly"
-                                                :id="'id_barbershop_services-'+ (value.length-addedServices().length+index) +'-service'"
-                                                :data-select2-id="'barbershop_services-'+ (value.length-addedServices().length+index) +'-service'"
-                                                tabindex="-1" aria-hidden="true"
-                                                class="form-control text-center init-select2">
-                                                <option :value="addedServiceID" selected="selected">
-                                                    [[findServiceByID(addedServiceID).label]]</option>
-                                            </select>
-                                        </div>
-                                        <div class="input-group mr-2">
-                                            <input type="number"
-                                                :name="'barbershop_services-'+ (value.length-addedServices().length+index) +'-price'"
-                                                value="10"
-                                                :id="'id_barbershop_services-'+ (value.length-addedServices().length+index) +'-price'"
+                                    <tbody>
+                                        {% for form in barbershop_services_formset %}
+                                        <tr>
+                                            <td class="py-1 serviceSelectInputGroup">
+                                                {{ form.service }} 
+                                                <div class="barbershop_services d-none">{{form.id}}</div>
+                                            </td>
+                                            <td class="py-1">
+                                                <div class="input-group">
+                                                    {{ form.price }}
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">TL</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-1">
+                                                {{ form.duration_mins }}
+                                            </td>
+                                            <td class="py-1">
+                                                <button 
+                                                    serviceID="{{form.id.value}}" 
+                                                    class="btn remove-service-btn btn-danger float-right mr-4"
+                                                >
+                                                    <i class="far fa-trash-alt"></i>
+                                                </button>
+                                            </td>
+                                            {{ form.errors }}
+                                        </tr>
+                                        {% endfor %}
+                                        <tr v-for="(addedServiceID, index) in addedServices()">
+                                            <td class="serviceSelectInputGroup py-1">
+                                                <select
+                                                    :name="'barbershop_services-'+ (value.length-addedServices().length+index) +'-service'"
+                                                    readonly="readonly"
+                                                    :id="'id_barbershop_services-'+ (value.length-addedServices().length+index) +'-service'"
+                                                    :data-select2-id="'barbershop_services-'+ (value.length-addedServices().length+index) +'-service'"
+                                                    tabindex="-1" aria-hidden="true"
+                                                    class="form-control text-center init-select2">
+                                                    <option :value="addedServiceID" selected="selected">
+                                                        [[findServiceByID(addedServiceID).label]]</option>
+                                                </select>
+                                            </td>
+                                            <td class="py-1">
+                                                <div class="input-group">
+                                                    <input 
+                                                    type="number"
+                                                    :name="'barbershop_services-'+ (value.length-addedServices().length+index) +'-price'"
+                                                    value="10"
+                                                    :id="'id_barbershop_services-'+ (value.length-addedServices().length+index) +'-price'"
+                                                    class="form-control text-center">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">TL</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-1">
+                                                <input type="number"
+                                                :name="'barbershop_services-'+ (value.length-addedServices().length+index) +'-duration_mins'"
+                                                value="20"
+                                                :id="'id_barbershop_services-'+ (value.length-addedServices().length+index) +'-duration_mins'"
                                                 class="form-control text-center">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text">TL</span>
-                                            </div>
-                                        </div>
-                                        <input type="number"
-                                            :name="'barbershop_services-'+ (value.length-addedServices().length+index) +'-duration_mins'"
-                                            value="20"
-                                            :id="'id_barbershop_services-'+ (value.length-addedServices().length+index) +'-duration_mins'"
-                                            class="form-control text-center">
-                                    </div>
-                                    <!-- <input type="submit" name="action" value="+" class="btn btn-success float-right mr-2"> -->
-                                </fieldset>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- <input type="submit" name="action" value="+" class="btn btn-success float-right mr-2"> -->
                             </div>
                         </div>
 

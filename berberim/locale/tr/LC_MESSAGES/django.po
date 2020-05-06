@@ -223,3 +223,6 @@ msgstr "Rezarvasyon yap"
 
 msgid "Fill the 'about' section which would display in barbershop profile page"
 msgstr "Berber dükkanı profil sayfasında görüntülenecek olan 'hakkında' kısmını doldurunuz"
+
+msgid "Service name"
+msgstr "Hizmet adı"
